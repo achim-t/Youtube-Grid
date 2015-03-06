@@ -1,5 +1,3 @@
-
-
 import java.io.IOException;
 
 import javax.servlet.ServletException;
@@ -23,25 +21,25 @@ import org.scribe.oauth.OAuthService;
 public class OAuth2CallbackServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	
-
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		String error = req.getParameter("error");
-		if ((error != null) && (error.trim().equals("access_denied"))){
+		if ((error != null) && (error.trim().equals("access_denied"))) {
 			HttpSession session = req.getSession();
 			session.invalidate();
 			resp.sendRedirect(req.getContextPath());
 			return;
-			
 		}
+
 		HttpSession session = req.getSession();
-		OAuthService service = (OAuthService) session.getAttribute("oauth2Service");
+		OAuthService service = (OAuthService) session
+				.getAttribute("oauth2Service");
 		String code = req.getParameter("code");
 		Token token = service.getAccessToken(null, new Verifier(code));
 		session.setAttribute("token", token);
-		OAuthRequest oReq = new OAuthRequest(Verb.GET, "https://www.googleapis.com/youtube/v3/subscriptions?part=snippet&mine=true");
+		OAuthRequest oReq = new OAuthRequest(Verb.GET,
+				"https://www.googleapis.com/youtube/v3/subscriptions?part=snippet&mine=true");
 		service.signRequest(token, oReq);
 		Response oResp = oReq.send();
 		String string = oResp.getBody();
