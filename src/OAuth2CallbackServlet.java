@@ -1,3 +1,4 @@
+
 import java.io.IOException;
 
 import javax.servlet.ServletException;
@@ -30,8 +31,8 @@ public class OAuth2CallbackServlet extends HttpServlet {
 			session.invalidate();
 			resp.sendRedirect(req.getContextPath());
 			return;
-		}
 
+		}
 		HttpSession session = req.getSession();
 		OAuthService service = (OAuthService) session
 				.getAttribute("oauth2Service");
