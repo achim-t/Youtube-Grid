@@ -1,5 +1,7 @@
+package com.tae.youtube.web;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -15,6 +17,8 @@ import org.scribe.model.Response;
 import org.scribe.model.Token;
 import org.scribe.model.Verb;
 import org.scribe.oauth.OAuthService;
+
+import com.tae.youtube.Channel;
 
 /**
  * Servlet implementation class Index
@@ -37,31 +41,20 @@ public class Index extends HttpServlet {
 				"https://www.googleapis.com/youtube/v3/subscriptions?part=snippet&mine=true");
 		Token token = (Token) session.getAttribute("token");
 		if (service == null) {
-			System.out.println("token is null");
 			request.getRequestDispatcher("googleplus").forward(request,
 					response);
 			return;
 		}
-		System.out.println("token is not null");
 		service.signRequest(token, oReq);
 		Response oResp = oReq.send();
-		PrintWriter writer = response.getWriter();
-		writer.println("<html><body>");
 		JSONObject jsonObject = new JSONObject(oResp.getBody());
 		JSONArray jsonArray = jsonObject.getJSONArray("items");
+		List<Channel> channelList = new ArrayList<>();
 		for (int i = 0; i < jsonArray.length(); i++) {
-
-			writer.println("<div>");
-			JSONObject channelJson = jsonArray.getJSONObject(i);
-			Channel channel = new Channel(channelJson);
-
-			writer.println(channel.getTitle());
-
-			writer.println(channel.getChannelId());
-			writer.println("<img src='" + channel.getThumbnailUrl() + "'/>");
-			writer.println("</div>");
+			channelList.add(new Channel(jsonArray.getJSONObject(i)));
 		}
-		writer.println("</body></html>");
+		request.setAttribute("channelList", channelList);
+		request.getRequestDispatcher("channelView").forward(request, response);
 	}
 
 	/**

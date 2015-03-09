@@ -9,4 +9,12 @@
     <welcome-file>default.htm</welcome-file>
     <welcome-file>default.jsp</welcome-file>
   </welcome-file-list>
+  <servlet>
+    <servlet-name>ChannelList</servlet-name>
+    <jsp-file>/channelView.jsp</jsp-file>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ChannelList</servlet-name>
+    <url-pattern>/channelView</url-pattern>
+  </servlet-mapping>
 </web-app>

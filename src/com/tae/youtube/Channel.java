@@ -1,3 +1,4 @@
+package com.tae.youtube;
 import org.json.JSONObject;
 
 public class Channel {
