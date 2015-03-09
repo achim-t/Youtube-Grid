@@ -1,4 +1,5 @@
 package com.tae.youtube.web;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,22 +38,30 @@ public class Index extends HttpServlet {
 
 		OAuthService service = (OAuthService) session
 				.getAttribute("oauth2Service");
-		OAuthRequest oReq = new OAuthRequest(Verb.GET,
-				"https://www.googleapis.com/youtube/v3/subscriptions?part=snippet&mine=true");
-		Token token = (Token) session.getAttribute("token");
-		if (service == null) {
-			request.getRequestDispatcher("googleplus").forward(request,
-					response);
-			return;
-		}
-		service.signRequest(token, oReq);
-		Response oResp = oReq.send();
-		JSONObject jsonObject = new JSONObject(oResp.getBody());
-		JSONArray jsonArray = jsonObject.getJSONArray("items");
+		String nextPageToken = "";
 		List<Channel> channelList = new ArrayList<>();
-		for (int i = 0; i < jsonArray.length(); i++) {
-			channelList.add(new Channel(jsonArray.getJSONObject(i)));
-		}
+		String requestUrl = "https://www.googleapis.com/youtube/v3/subscriptions?maxResults=50&part=snippet&mine=true&pageToken=";
+		do {
+			OAuthRequest oReq = new OAuthRequest(Verb.GET,requestUrl+nextPageToken);
+			Token token = (Token) session.getAttribute("token");
+			if (service == null) {
+				request.getRequestDispatcher("googleplus").forward(request,
+						response);
+				return;
+			}
+			service.signRequest(token, oReq);
+			Response oResp = oReq.send();
+			JSONObject jsonObject = new JSONObject(oResp.getBody());
+			JSONArray jsonArray = jsonObject.getJSONArray("items");
+
+			for (int i = 0; i < jsonArray.length(); i++) {
+				channelList.add(new Channel(jsonArray.getJSONObject(i)));
+			}
+			if (jsonObject.has("nextPageToken"))
+				nextPageToken = jsonObject.getString("nextPageToken");
+			else 
+				nextPageToken = "";
+		} while (nextPageToken.length() > 0);
 		request.setAttribute("channelList", channelList);
 		request.getRequestDispatcher("channelView").forward(request, response);
 	}
