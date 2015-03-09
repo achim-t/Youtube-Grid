@@ -1,11 +1,14 @@
 package com.tae.youtube;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Video {
@@ -20,7 +23,16 @@ public class Video {
 	public Video(JSONObject videoJson){
 		this.id = videoJson.getString("id");
 		JSONObject snippet = videoJson.getJSONObject("snippet");
-		snippet.getString("publishedAt"); //TODO
+		SimpleDateFormat simpleFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+		try {
+			publishedAt = simpleFormat.parse(snippet.getString("publishedAt"));
+		} catch (JSONException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (ParseException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} //TODO
 		this.channelId = snippet.getString("channelId");
 		this.title=snippet.getString("title");
 		this.thumbnailUrl = snippet.getJSONObject("thumbnails").getJSONObject("default").getString("url");

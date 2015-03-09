@@ -63,11 +63,11 @@ public class Index extends HttpServlet {
 
 		SortedMap<String, Video> videos = getVideos(channelList, service, token);
 		System.out.println("hi");
-//		request.setAttribute("videoList", videos);
-//		request.getRequestDispatcher("videoView").forward(request, response);
-		 request.setAttribute("channelList", channelList);
-		 request.getRequestDispatcher("channelView").forward(request,
-		 response);
+		request.setAttribute("videoList", videos);
+		request.getRequestDispatcher("videoView").forward(request, response);
+//		 request.setAttribute("channelList", channelList);
+//		 request.getRequestDispatcher("channelView").forward(request,
+//		 response);
 	}
 
 	private SortedMap<String, Video> getVideos(List<Channel> channelList,

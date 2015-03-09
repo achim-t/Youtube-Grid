@@ -15,6 +15,8 @@
 <td><%= video.getId() %></td>
 <td><%= video.getTitle() %></td>
 <td><img src='<%= video.getThumbnailUrl() %>' /></td>
+<td><%= video.getDuration() %></td>
+<td><%= video.getPublishedAt() %>
 </tr>
 <% } %>
 
