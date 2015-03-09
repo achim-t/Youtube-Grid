@@ -38,7 +38,12 @@
 </repositories>
 
 <!-- dependency -->
-<dependencies>
+<dependencies><dependency>
+	<groupId>org.json</groupId>
+	<artifactId>json</artifactId>
+	<version>20141113</version>
+</dependency>
+
 <dependency>
   <groupId>org.scribe</groupId>
   <artifactId>scribe</artifactId>

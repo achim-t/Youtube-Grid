@@ -1,5 +1,7 @@
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -8,11 +10,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.scribe.extractors.JsonTokenExtractor;
 import org.scribe.model.OAuthRequest;
 import org.scribe.model.Response;
 import org.scribe.model.Token;
 import org.scribe.model.Verb;
 import org.scribe.oauth.OAuthService;
+
 
 /**
  * Servlet implementation class Index
@@ -42,9 +48,23 @@ public class Index extends HttpServlet {
 		System.out.println("token is not null");
 		service.signRequest(token, oReq);
 		Response oResp = oReq.send();
-		String string = oResp.getBody();
-		response.getWriter().println("Success?");
-		response.getWriter().println(string);
+		PrintWriter writer = response.getWriter();
+		writer.println("<html><body>");
+		JSONObject jsonObject = new JSONObject(oResp.getBody()); 
+		JSONArray jsonArray = jsonObject.getJSONArray("items");
+		for (int i=0; i<jsonArray.length(); i++){
+			writer.println("<div>");
+			JSONObject channel = jsonArray.getJSONObject(i);
+			JSONObject channelSnippet = channel.getJSONObject("snippet");
+			String title = channelSnippet.getString("title");
+			writer.println(title);
+			String imageUrl = channelSnippet.getJSONObject("thumbnails").getJSONObject("default").getString("url");
+			String channelId = channelSnippet.getJSONObject("resourceId").getString("channelId");
+			writer.println(channelId);
+			writer.println("<img src='"+imageUrl+"'/>");
+			writer.println("</div>");
+		}
+		writer.println("</body></html>");
 	}
 
 	/**
