@@ -11,7 +11,7 @@ import javax.xml.datatype.Duration;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Video {
+public class Video  implements Comparable<Video>{
 	private String id;
 	private String channelId;
 	private String title;
@@ -73,5 +73,12 @@ public class Video {
 
 	public Date getPublishedAt() {
 		return publishedAt;
+	}
+
+
+	@Override
+	public int compareTo(Video other) {
+		
+		return -1 * this.getPublishedAt().compareTo(other.getPublishedAt());
 	}
 }

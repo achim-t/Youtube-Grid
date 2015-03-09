@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1" import="java.util.SortedMap,com.tae.youtube.Video"%>
+    pageEncoding="ISO-8859-1" import="java.util.List,com.tae.youtube.Video"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -9,7 +9,7 @@
 <body>
 <table border="1">
 <% 
-	for (Video video : ((SortedMap<String,Video>)request.getAttribute("videoList")).values()){ 
+	for (Video video : ((List<Video>)request.getAttribute("videoList"))){ 
 %>
 <tr>
 <td><%= video.getId() %></td>
