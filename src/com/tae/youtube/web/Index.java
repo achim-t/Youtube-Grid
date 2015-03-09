@@ -3,6 +3,8 @@ package com.tae.youtube.web;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -20,30 +22,26 @@ import org.scribe.model.Verb;
 import org.scribe.oauth.OAuthService;
 
 import com.tae.youtube.Channel;
+import com.tae.youtube.Video;
 
-/**
- * Servlet implementation class Index
- */
-@WebServlet("/")
+@WebServlet("/index")
 public class Index extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession();
 
 		OAuthService service = (OAuthService) session
 				.getAttribute("oauth2Service");
+		Token token;
 		String nextPageToken = "";
 		List<Channel> channelList = new ArrayList<>();
 		String requestUrl = "https://www.googleapis.com/youtube/v3/subscriptions?maxResults=50&part=snippet&mine=true&pageToken=";
 		do {
-			OAuthRequest oReq = new OAuthRequest(Verb.GET,requestUrl+nextPageToken);
-			Token token = (Token) session.getAttribute("token");
+			OAuthRequest oReq = new OAuthRequest(Verb.GET, requestUrl
+					+ nextPageToken);
+			token = (Token) session.getAttribute("token");
 			if (service == null) {
 				request.getRequestDispatcher("googleplus").forward(request,
 						response);
@@ -59,20 +57,56 @@ public class Index extends HttpServlet {
 			}
 			if (jsonObject.has("nextPageToken"))
 				nextPageToken = jsonObject.getString("nextPageToken");
-			else 
+			else
 				nextPageToken = "";
 		} while (nextPageToken.length() > 0);
-		request.setAttribute("channelList", channelList);
-		request.getRequestDispatcher("channelView").forward(request, response);
+
+		SortedMap<String, Video> videos = getVideos(channelList, service, token);
+		System.out.println("hi");
+//		request.setAttribute("videoList", videos);
+//		request.getRequestDispatcher("videoView").forward(request, response);
+		 request.setAttribute("channelList", channelList);
+		 request.getRequestDispatcher("channelView").forward(request,
+		 response);
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
-	protected void doPost(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
+	private SortedMap<String, Video> getVideos(List<Channel> channelList,
+			OAuthService service, Token token) {
+		SortedMap<String, Video> videoList = new TreeMap<>();
+		List<String> videoIdList = new ArrayList<>();
+		String ids = "";
+		String requestUrl = "https://www.googleapis.com/youtube/v3/search?order=date&part=id&channelId=";
+		for (Channel channel : channelList) {
+			OAuthRequest oReq = new OAuthRequest(Verb.GET, requestUrl
+					+ channel.getChannelId());
+			service.signRequest(token, oReq);
+			Response oResp = oReq.send();
+			JSONArray videos = new JSONObject(oResp.getBody())
+					.getJSONArray("items");
+//			System.out.println(oResp.getBody());
+			for (int i = 0; i < videos.length(); i++) {
+				JSONObject idJson = videos.getJSONObject(i).getJSONObject("id");
+				if (idJson.has("videoId")) {
+					String id = idJson.getString("videoId");
+					ids += id + ",";
+					videoIdList.add(id);
+				}
+			}
+		}
+
+		requestUrl = "https://www.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails&id=";
+		OAuthRequest oReq = new OAuthRequest(Verb.GET, requestUrl + ids);
+		service.signRequest(token, oReq);
+		Response oResp = oReq.send();
+		JSONArray videos = new JSONObject(oResp.getBody())
+				.getJSONArray("items");
+//		System.out.println(oResp.getBody());
+		for (int i = 0; i < videos.length(); i++) {
+			Video video = new Video(videos.getJSONObject(i));
+			videoList.put(video.getId(), video);
+		}
+		return videoList;
+
 	}
 
 }
