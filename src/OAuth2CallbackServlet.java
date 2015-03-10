@@ -36,14 +36,7 @@ public class OAuth2CallbackServlet extends HttpServlet {
 		String code = req.getParameter("code");
 		Token token = service.getAccessToken(null, new Verifier(code));
 		session.setAttribute("token", token);
+		session.setAttribute("authorized", "authorized");
 		resp.sendRedirect("./index");
-//		req.getRequestDispatcher("/Index").forward(req, resp);
-//		OAuthRequest oReq = new OAuthRequest(Verb.GET,
-//				"https://www.googleapis.com/youtube/v3/subscriptions?part=snippet&mine=true");
-//		service.signRequest(token, oReq);
-//		Response oResp = oReq.send();
-//		String string = oResp.getBody();
-//		resp.getWriter().println("Success?");
-//		resp.getWriter().println(string);
 	}
 }
