@@ -23,6 +23,7 @@ import org.scribe.model.Verb;
 import org.scribe.oauth.OAuthService;
 
 import com.tae.youtube.Channel;
+import com.tae.youtube.OAuthServiceProvider;
 import com.tae.youtube.Video;
 
 @WebServlet("/index")
@@ -37,6 +38,7 @@ public class Index extends HttpServlet {
 		if (authorized == null) {
 			request.getRequestDispatcher("googleplus").forward(request,
 					response);
+			return;
 
 		} else {
 
@@ -100,7 +102,7 @@ public class Index extends HttpServlet {
 			Response oResp = doAuthorizedRequest(session, url);
 			JSONArray videos = new JSONObject(oResp.getBody())
 					.getJSONArray("items");
-			// System.out.println(oResp.getBody());
+			
 			for (int i = 0; i < videos.length(); i++) {
 				JSONObject idJson = videos.getJSONObject(i).getJSONObject("id");
 				if (idJson.has("videoId")) {
@@ -119,7 +121,7 @@ public class Index extends HttpServlet {
 		JSONObject responseBody = new JSONObject(oResp.getBody());
 		if (!responseBody.has("error")) {
 			JSONArray videos = responseBody.getJSONArray("items");
-			// System.out.println(oResp.getBody());
+			
 			for (int i = 0; i < videos.length(); i++) {
 				Video video = new Video(videos.getJSONObject(i));
 				videoList.put(video.getId(), video);
@@ -133,6 +135,8 @@ public class Index extends HttpServlet {
 		Token token = (Token) session.getAttribute("token");
 		OAuthService service = (OAuthService) session
 				.getAttribute("oauth2Service");
+		if (service==null)
+			service = OAuthServiceProvider.getService();
 		OAuthRequest oReq = new OAuthRequest(Verb.GET, url);
 		service.signRequest(token, oReq);
 		Response oResp = oReq.send();
