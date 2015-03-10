@@ -34,7 +34,5 @@ public class GooglePlusServlet extends HttpServlet {
 		HttpSession session = request.getSession();
 		session.setAttribute("oauth2Service", service);
 		response.sendRedirect(service.getAuthorizationUrl(null));
-//		response.getWriter().println("Hello");
 	}
-
 }
