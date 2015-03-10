@@ -8,6 +8,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -31,54 +32,70 @@ public class Index extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
+		
 		HttpSession session = request.getSession();
+		List<Channel> channelList = getSubscriptions(request, response);
+		
+		if (channelList.size() > 0) {
+			session.setAttribute("channelList", channelList);
 
-		OAuthService service = (OAuthService) session
-				.getAttribute("oauth2Service");
-		Token token;
-		String nextPageToken = "";
-		List<Channel> channelList = new ArrayList<>();
-		String requestUrl = "https://www.googleapis.com/youtube/v3/subscriptions?maxResults=50&part=snippet&mine=true&pageToken=";
-		do {
-			OAuthRequest oReq = new OAuthRequest(Verb.GET, requestUrl
-					+ nextPageToken);
-			token = (Token) session.getAttribute("token");
-			if (service == null) {
-				request.getRequestDispatcher("googleplus").forward(request,
-						response);
-				return;
-			}
-			service.signRequest(token, oReq);
-			Response oResp = oReq.send();
-			JSONObject jsonObject = new JSONObject(oResp.getBody());
-			JSONArray jsonArray = jsonObject.getJSONArray("items");
-
-			for (int i = 0; i < jsonArray.length(); i++) {
-				channelList.add(new Channel(jsonArray.getJSONObject(i)));
-			}
-			if (jsonObject.has("nextPageToken"))
-				nextPageToken = jsonObject.getString("nextPageToken");
-			else
-				nextPageToken = "";
-		} while (nextPageToken.length() > 0);
-
-		SortedMap<String, Video> videos = getVideos(channelList, service, token);
-		System.out.println("hi");
-		ArrayList<Video> arrayList = new ArrayList<Video>(videos.values());
-		Collections.sort(arrayList);
-		request.setAttribute("videoList", arrayList);
-		request.getRequestDispatcher("videoView").forward(request, response);
-		// request.setAttribute("channelList", channelList);
-		// request.getRequestDispatcher("channelView").forward(request,
-		// response);
+			SortedMap<String, Video> videos = getVideosFromChannelList(session);
+			ArrayList<Video> arrayList = new ArrayList<Video>(videos.values());
+			Collections.sort(arrayList);
+			
+			request.setAttribute("videoList", arrayList);
+			request.getRequestDispatcher("videoView")
+					.forward(request, response);
+		}
 	}
 
-	private SortedMap<String, Video> getVideos(List<Channel> channelList,
-			OAuthService service, Token token) {
+	private List<Channel> getSubscriptions(HttpServletRequest request,
+			ServletResponse response) throws ServletException, IOException {
+		HttpSession session = request.getSession();
+		OAuthService service = (OAuthService) session
+				.getAttribute("oauth2Service");
+		Token token = (Token) session.getAttribute("token");
+		List<Channel> channelList = new ArrayList<>();
+		if (service == null || token == null) {
+			request.getRequestDispatcher("googleplus").forward(request,
+					response);
+
+		} else {
+			String nextPageToken = "";
+
+			String requestUrl = "https://www.googleapis.com/youtube/v3/subscriptions?maxResults=50&part=snippet&mine=true&pageToken=";
+			do {
+				OAuthRequest oReq = new OAuthRequest(Verb.GET, requestUrl
+						+ nextPageToken);
+
+				service.signRequest(token, oReq);
+				Response oResp = oReq.send();
+				JSONObject jsonObject = new JSONObject(oResp.getBody());
+				JSONArray jsonArray = jsonObject.getJSONArray("items");
+
+				for (int i = 0; i < jsonArray.length(); i++) {
+					channelList.add(new Channel(jsonArray.getJSONObject(i)));
+				}
+				if (jsonObject.has("nextPageToken"))
+					nextPageToken = jsonObject.getString("nextPageToken");
+				else
+					nextPageToken = "";
+			} while (nextPageToken.length() > 0);
+		}
+		return channelList;
+	}
+
+	private SortedMap<String, Video> getVideosFromChannelList(
+			HttpSession session) {
+		List<Channel> channelList = (List<Channel>) session
+				.getAttribute("channelList");
 		SortedMap<String, Video> videoList = new TreeMap<>();
 		List<String> videoIdList = new ArrayList<>();
 		String ids = "";
 		String requestUrl = "https://www.googleapis.com/youtube/v3/search?order=date&part=id&channelId=";
+		OAuthService service = (OAuthService) session
+				.getAttribute("oauth2Service");
+		Token token = (Token) session.getAttribute("token");
 		for (Channel channel : channelList) {
 			OAuthRequest oReq = new OAuthRequest(Verb.GET, requestUrl
 					+ channel.getChannelId());
