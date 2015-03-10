@@ -36,7 +36,7 @@ public class Video  implements Comparable<Video>, Serializable{
 		} //TODO
 		this.channelId = snippet.getString("channelId");
 		this.title=snippet.getString("title");
-		this.thumbnailUrl = snippet.getJSONObject("thumbnails").getJSONObject("default").getString("url");
+		this.thumbnailUrl = snippet.getJSONObject("thumbnails").getJSONObject("medium").getString("url");
 		String duration = videoJson.getJSONObject("contentDetails").getString("duration");
 		try {
 			this.duration = DatatypeFactory.newInstance().newDuration(duration);

@@ -5,22 +5,23 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Channel List</title>
+<link rel="stylesheet" href="/Youtube/style.css" />
 </head>
 <body>
-<table border="1">
+
 <% 
 	for (Video video : ((List<Video>)request.getAttribute("videoList"))){ 
 %>
-<tr>
-<td><%= video.getId() %></td>
-<td><%= video.getTitle() %></td>
-<td><img src='<%= video.getThumbnailUrl() %>' /></td>
-<td><%= video.getDuration() %></td>
-<td><%= video.getPublishedAt() %>
-</tr>
+
+<div class="video">
+<div><%= video.getTitle() %></div>
+<div><a href="https://www.youtube.com/watch?v=<%= video.getId() %>"><img src='<%= video.getThumbnailUrl() %>' /></a></div>
+<span class="video-duration"><%= video.getDuration() %></span>
+<%-- <td><%= video.getPublishedAt() %> --%>
+</div>
 <% } %>
 
-</table>
+
 <a href="signout">Sign out</a>
 </body>
 </html>

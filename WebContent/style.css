@@ -1,0 +1,16 @@
+@CHARSET "ISO-8859-1";
+
+.video-duration {
+	position: absolute;
+	bottom: 2px;
+	right: 2px;
+	background-color: black;
+	display: inline-block;
+	color: white;
+	opacity: .5;
+}
+
+.video {
+	width: 320px;
+	position: relative;
+}
