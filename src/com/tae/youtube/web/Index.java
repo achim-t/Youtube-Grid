@@ -32,17 +32,17 @@ public class Index extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		
+
 		HttpSession session = request.getSession();
 		List<Channel> channelList = getSubscriptions(request, response);
-		
+
 		if (channelList.size() > 0) {
 			session.setAttribute("channelList", channelList);
 
 			SortedMap<String, Video> videos = getVideosFromChannelList(session);
 			ArrayList<Video> arrayList = new ArrayList<Video>(videos.values());
 			Collections.sort(arrayList);
-			
+
 			request.setAttribute("videoList", arrayList);
 			request.getRequestDispatcher("videoView")
 					.forward(request, response);
@@ -93,14 +93,10 @@ public class Index extends HttpServlet {
 		List<String> videoIdList = new ArrayList<>();
 		String ids = "";
 		String requestUrl = "https://www.googleapis.com/youtube/v3/search?order=date&part=id&channelId=";
-		OAuthService service = (OAuthService) session
-				.getAttribute("oauth2Service");
-		Token token = (Token) session.getAttribute("token");
+
 		for (Channel channel : channelList) {
-			OAuthRequest oReq = new OAuthRequest(Verb.GET, requestUrl
-					+ channel.getChannelId());
-			service.signRequest(token, oReq);
-			Response oResp = oReq.send();
+			String url = requestUrl + channel.getChannelId();
+			Response oResp = doAuthorizedRequest(session, url);
 			JSONArray videos = new JSONObject(oResp.getBody())
 					.getJSONArray("items");
 			// System.out.println(oResp.getBody());
@@ -114,10 +110,10 @@ public class Index extends HttpServlet {
 			}
 		}
 
-		requestUrl = "https://www.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails&id=";
-		OAuthRequest oReq = new OAuthRequest(Verb.GET, requestUrl + ids);
-		service.signRequest(token, oReq);
-		Response oResp = oReq.send();
+		requestUrl = "https://www.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails&id="
+				+ ids;
+
+		Response oResp = doAuthorizedRequest(session, requestUrl);
 
 		JSONObject responseBody = new JSONObject(oResp.getBody());
 		if (!responseBody.has("error")) {
@@ -130,6 +126,16 @@ public class Index extends HttpServlet {
 		}
 		return videoList;
 
+	}
+
+	private Response doAuthorizedRequest(HttpSession session, String url) {
+		Token token = (Token) session.getAttribute("token");
+		OAuthService service = (OAuthService) session
+				.getAttribute("oauth2Service");
+		OAuthRequest oReq = new OAuthRequest(Verb.GET, url);
+		service.signRequest(token, oReq);
+		Response oResp = oReq.send();
+		return oResp;
 	}
 
 }
