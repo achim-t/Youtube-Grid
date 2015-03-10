@@ -14,9 +14,11 @@
 %>
 
 <div class="video">
-<div><%= video.getTitle() %></div>
-<div><a href="https://www.youtube.com/watch?v=<%= video.getId() %>"><img src='<%= video.getThumbnailUrl() %>' /></a></div>
-<span class="video-duration"><%= video.getDuration() %></span>
+<div class="title"><%= video.getTitle() %></div>
+<div class="img-container">
+	<a href="https://www.youtube.com/watch?v=<%= video.getId() %>"><img src='<%= video.getThumbnailUrl() %>' /></a>
+	<span class="video-duration"><%= video.getDuration() %></span>
+</div>
 <%-- <td><%= video.getPublishedAt() %> --%>
 </div>
 <% } %>

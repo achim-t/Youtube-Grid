@@ -1,16 +1,66 @@
 @CHARSET "ISO-8859-1";
 
 .video-duration {
-	position: absolute;
-	bottom: 2px;
+position: absolute;
+	display: inline;
+	height: 16px;
+	line-height: 16px;
+	color: #eee;
+	vertical-align: top;
+	opacity: 0.65;
+	text-align: center;
+	background: #111;
+	border-radius: 3px;
+	font-size: 13px;
 	right: 2px;
-	background-color: black;
-	display: inline-block;
-	color: white;
-	opacity: .5;
+	bottom: 3px;
+	padding: 0 3px 0 3px;
 }
 
 .video {
-	width: 320px;
+	float: left;
 	position: relative;
+	width: 200px;
+	height: 200px;
+	margin: 12px 4px;
+	border: none;
+	overflow: hidden;
+}
+
+.video img {
+	opacity: 0.9;
+	width: 192px;
+	
+}
+
+.video .img-container {
+	width: 192px;
+	height: 108px;
+	border-radius: 4px !important;
+	position: relative;
+	overflow: hidden;
+}
+
+.title {
+	position: relative;
+	float: left;
+	padding-top: 6px;
+	font-size: 90%;
+	height: 3.5em;
+	text-decoration: none;
+	color: #333;
+	overflow: hidden;
+	text-align: center;
+	font-weight: 600;
+	width: 90%;
+	margin-left: 5%;
+
+/* 	a { */
+/* 		text-decoration: none; */
+/* 		color: #444; */
+
+/* 		&:hover { */
+/* 			color: #000 !important; */
+/* 		} */
+/* 	} */
 }
