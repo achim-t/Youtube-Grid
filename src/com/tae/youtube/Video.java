@@ -1,5 +1,6 @@
 package com.tae.youtube;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -11,7 +12,7 @@ import javax.xml.datatype.Duration;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Video  implements Comparable<Video>{
+public class Video  implements Comparable<Video>, Serializable{
 	private String id;
 	private String channelId;
 	private String title;

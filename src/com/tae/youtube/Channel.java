@@ -1,7 +1,9 @@
 package com.tae.youtube;
+import java.io.Serializable;
+
 import org.json.JSONObject;
 
-public class Channel {
+public class Channel implements Serializable{
 
 	private String thumbnailUrl;
 	private String title;
