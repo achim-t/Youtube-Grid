@@ -36,29 +36,28 @@ public class Index extends HttpServlet {
 		HttpSession session = request.getSession();
 		String authorized = (String) session.getAttribute("authorized");
 		if (authorized == null) {
-			request.getRequestDispatcher("googleplus").forward(request,
-					response);
+			OAuthService service = OAuthServiceProvider.getService();
+			session.setAttribute("oauth2Service", service);
+			response.sendRedirect(service.getAuthorizationUrl(null));
 			return;
-
-		} else {
-
-			List<Channel> channelList = getSubscriptions(session);
-
-			if (channelList.size() > 0) {
-				session.setAttribute("channelList", channelList);
-
-				SortedMap<String, Video> videos = getVideosFromChannelList(session);
-				ArrayList<Video> arrayList = new ArrayList<Video>(
-						videos.values());
-				Collections.sort(arrayList);
-
-				request.setAttribute("videoList", arrayList);
-				request.getRequestDispatcher("videoView").forward(request,
-						response);
-			} else {
-				response.getWriter().println("no subscriptions found");
-			}
 		}
+
+		List<Channel> channelList = getSubscriptions(session);
+
+		if (channelList.size() > 0) {
+			session.setAttribute("channelList", channelList);
+
+			SortedMap<String, Video> videos = getVideosFromChannelList(session);
+			ArrayList<Video> arrayList = new ArrayList<Video>(videos.values());
+			Collections.sort(arrayList);
+
+			request.setAttribute("videoList", arrayList);
+			request.getRequestDispatcher("videoView")
+					.forward(request, response);
+		} else {
+			response.getWriter().println("no subscriptions found");
+		}
+
 	}
 
 	private List<Channel> getSubscriptions(HttpSession session)
@@ -102,7 +101,7 @@ public class Index extends HttpServlet {
 			Response oResp = doAuthorizedRequest(session, url);
 			JSONArray videos = new JSONObject(oResp.getBody())
 					.getJSONArray("items");
-			
+
 			for (int i = 0; i < videos.length(); i++) {
 				JSONObject idJson = videos.getJSONObject(i).getJSONObject("id");
 				if (idJson.has("videoId")) {
@@ -121,7 +120,7 @@ public class Index extends HttpServlet {
 		JSONObject responseBody = new JSONObject(oResp.getBody());
 		if (!responseBody.has("error")) {
 			JSONArray videos = responseBody.getJSONArray("items");
-			
+
 			for (int i = 0; i < videos.length(); i++) {
 				Video video = new Video(videos.getJSONObject(i));
 				videoList.put(video.getId(), video);
@@ -135,7 +134,7 @@ public class Index extends HttpServlet {
 		Token token = (Token) session.getAttribute("token");
 		OAuthService service = (OAuthService) session
 				.getAttribute("oauth2Service");
-		if (service==null)
+		if (service == null)
 			service = OAuthServiceProvider.getService();
 		OAuthRequest oReq = new OAuthRequest(Verb.GET, url);
 		service.signRequest(token, oReq);
