@@ -60,7 +60,10 @@ public class YTVideo  implements Comparable<YTVideo>, Serializable{
 
 	@Override
 	public int compareTo(YTVideo other) {
+		return -1* Long.compare(publishedAt.getValue(), other.getPublishedAt().getValue());
 		
-		return (int) (other.getPublishedAt().getValue() - getPublishedAt().getValue());
+	}
+	public String toString(){
+		return title;
 	}
 }
