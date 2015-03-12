@@ -39,6 +39,10 @@
 
 <!-- dependency -->
 <dependencies><dependency>
+	<groupId>com.google.apis</groupId>
+	<artifactId>google-api-services-youtube</artifactId>
+	<version>v3-rev128-1.19.1</version>
+</dependency><dependency>
 	<groupId>org.json</groupId>
 	<artifactId>json</artifactId>
 	<version>20141113</version>

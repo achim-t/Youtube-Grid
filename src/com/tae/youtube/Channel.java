@@ -1,21 +1,22 @@
 package com.tae.youtube;
 import java.io.Serializable;
 
-import org.json.JSONObject;
+import com.google.api.services.youtube.model.Subscription;
+import com.google.api.services.youtube.model.SubscriptionSnippet;
 
+@SuppressWarnings("serial")
 public class Channel implements Serializable{
 
 	private String thumbnailUrl;
 	private String title;
 	private String channelId;
 
-	public Channel(JSONObject channelJson) {
-		JSONObject channelSnippet = channelJson.getJSONObject("snippet");
-		title = channelSnippet.getString("title");
-		thumbnailUrl = channelSnippet.getJSONObject("thumbnails")
-				.getJSONObject("default").getString("url");
-		channelId = channelSnippet.getJSONObject("resourceId").getString(
-				"channelId");
+
+	public Channel(Subscription sub) {
+		SubscriptionSnippet snippet = sub.getSnippet();
+		title = snippet.getChannelTitle();
+		thumbnailUrl = snippet.getThumbnails().getDefault().getUrl();
+		channelId = snippet.getResourceId().getChannelId();
 	}
 
 	public String getThumbnailUrl() {

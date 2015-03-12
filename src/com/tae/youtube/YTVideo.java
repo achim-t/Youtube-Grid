@@ -1,49 +1,30 @@
 package com.tae.youtube;
 
 import java.io.Serializable;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.Duration;
+import com.google.api.client.util.DateTime;
+import com.google.api.services.youtube.model.Video;
+import com.google.api.services.youtube.model.VideoSnippet;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-public class Video  implements Comparable<Video>, Serializable{
+public class YTVideo  implements Comparable<YTVideo>, Serializable{
 	private String id;
 	private String channelId;
 	private String title;
 	private String thumbnailUrl;
-	private Duration duration;
-	private Date publishedAt;
+	private String duration;
+	private DateTime publishedAt;
 	
 	
-	public Video(JSONObject videoJson){
-		this.id = videoJson.getString("id");
-		JSONObject snippet = videoJson.getJSONObject("snippet");
-		SimpleDateFormat simpleFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-		try {
-			publishedAt = simpleFormat.parse(snippet.getString("publishedAt"));
-		} catch (JSONException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (ParseException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} //TODO
-		this.channelId = snippet.getString("channelId");
-		this.title=snippet.getString("title");
-		this.thumbnailUrl = snippet.getJSONObject("thumbnails").getJSONObject("medium").getString("url");
-		String duration = videoJson.getJSONObject("contentDetails").getString("duration");
-		try {
-			this.duration = DatatypeFactory.newInstance().newDuration(duration);
-		} catch (DatatypeConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
+
+	public YTVideo(Video video) {
+		id = video.getId();
+		VideoSnippet snippet = video.getSnippet();
+		publishedAt=snippet.getPublishedAt();
+		channelId=snippet.getChannelId();
+		title=snippet.getTitle();
+		thumbnailUrl=snippet.getThumbnails().getMedium().getUrl();
+		duration = video.getContentDetails().getDuration();
 	}
 
 
@@ -67,19 +48,19 @@ public class Video  implements Comparable<Video>, Serializable{
 	}
 
 
-	public Duration getDuration() {
+	public String getDuration() {
 		return duration;
 	}
 
 
-	public Date getPublishedAt() {
+	public DateTime getPublishedAt() {
 		return publishedAt;
 	}
 
 
 	@Override
-	public int compareTo(Video other) {
+	public int compareTo(YTVideo other) {
 		
-		return -1 * this.getPublishedAt().compareTo(other.getPublishedAt());
+		return (int) (other.getPublishedAt().getValue() - getPublishedAt().getValue());
 	}
 }

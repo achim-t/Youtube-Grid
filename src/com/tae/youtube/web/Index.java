@@ -1,5 +1,7 @@
 package com.tae.youtube.web;
 
+
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,41 +16,47 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.scribe.model.OAuthRequest;
-import org.scribe.model.Response;
-import org.scribe.model.Token;
-import org.scribe.model.Verb;
-import org.scribe.oauth.OAuthService;
-
+import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.auth.oauth2.TokenResponseException;
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
+import com.google.api.services.youtube.YouTube;
+import com.google.api.services.youtube.model.SearchListResponse;
+import com.google.api.services.youtube.model.SearchResult;
+import com.google.api.services.youtube.model.Subscription;
+import com.google.api.services.youtube.model.SubscriptionListResponse;
+import com.google.api.services.youtube.model.Video;
+import com.google.api.services.youtube.model.VideoListResponse;
+import com.tae.youtube.Auth;
 import com.tae.youtube.Channel;
-import com.tae.youtube.OAuthServiceProvider;
-import com.tae.youtube.Video;
+import com.tae.youtube.YTVideo;
 
 @WebServlet("/index")
 public class Index extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
+	private Credential credential;
+
+	private YouTube youtube;
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 
-		HttpSession session = request.getSession();
-		String authorized = (String) session.getAttribute("authorized");
-		if (authorized == null) {
-			OAuthService service = OAuthServiceProvider.getService();
-			session.setAttribute("oauth2Service", service);
-			response.sendRedirect(service.getAuthorizationUrl(null));
+		 HttpSession session = request.getSession();
+		 String userId =session.getId();
+		credential = Auth.getCredential(userId);
+		if (credential == null) {
+			String url = Auth.getAuthorizationUrl();
+			response.sendRedirect(url);
 			return;
 		}
-
+		youtube = new YouTube.Builder(Auth.HTTP_TRANSPORT,
+				Auth.JSON_FACTORY, credential).build();
 		List<Channel> channelList = getSubscriptions(session);
 
 		if (channelList.size() > 0) {
 			session.setAttribute("channelList", channelList);
 
-			SortedMap<String, Video> videos = getVideosFromChannelList(session);
-			ArrayList<Video> arrayList = new ArrayList<Video>(videos.values());
+			SortedMap<String, YTVideo> videos = getVideosFromChannelList(session);
+			ArrayList<YTVideo> arrayList = new ArrayList<YTVideo>(videos.values());
 			Collections.sort(arrayList);
 
 			request.setAttribute("videoList", arrayList);
@@ -67,79 +75,68 @@ public class Index extends HttpServlet {
 
 		String nextPageToken = "";
 
-		String requestUrl = "https://www.googleapis.com/youtube/v3/subscriptions?maxResults=50&part=snippet&mine=true&pageToken=";
 		do {
-			String url = requestUrl + nextPageToken;
-
-			Response oResp = doAuthorizedRequest(session, url);
-			JSONObject jsonObject = new JSONObject(oResp.getBody());
-			JSONArray jsonArray = jsonObject.getJSONArray("items");
-
-			for (int i = 0; i < jsonArray.length(); i++) {
-				channelList.add(new Channel(jsonArray.getJSONObject(i)));
+			
+			SubscriptionListResponse subscriptionListResponse = null;
+			try {
+				subscriptionListResponse = youtube
+						.subscriptions()
+						.list("snippet")
+						.setMine(true)
+						.setMaxResults((long) 50)
+						.execute();
+			} catch (TokenResponseException | GoogleJsonResponseException e) {
+				// TODO Auto-generated catch block
+				System.out.println(e);
+				Auth.deleteUserFromCredentialDataStore(session.getId());
+//				response.sendRedirect("/Test/home");
+//				return;
 			}
-			if (jsonObject.has("nextPageToken"))
-				nextPageToken = jsonObject.getString("nextPageToken");
-			else
-				nextPageToken = "";
-		} while (nextPageToken.length() > 0);
+			for (Subscription sub : subscriptionListResponse.getItems()) {
+				channelList.add( new Channel(sub));
+			}
+		} while (nextPageToken.length() > 0); //TODO
 
 		return channelList;
 	}
 
-	private SortedMap<String, Video> getVideosFromChannelList(
-			HttpSession session) {
+	private SortedMap<String, YTVideo> getVideosFromChannelList(
+			HttpSession session) throws IOException {
+		@SuppressWarnings("unchecked")
 		List<Channel> channelList = (List<Channel>) session
 				.getAttribute("channelList");
-		SortedMap<String, Video> videoList = new TreeMap<>();
+		SortedMap<String, YTVideo> videoList = new TreeMap<>();
 		List<String> videoIdList = new ArrayList<>();
 		String ids = "";
-		String requestUrl = "https://www.googleapis.com/youtube/v3/search?order=date&part=id&channelId=";
-
+		
 		for (Channel channel : channelList) {
-			String url = requestUrl + channel.getChannelId();
-			Response oResp = doAuthorizedRequest(session, url);
-			JSONArray videos = new JSONObject(oResp.getBody())
-					.getJSONArray("items");
-
-			for (int i = 0; i < videos.length(); i++) {
-				JSONObject idJson = videos.getJSONObject(i).getJSONObject("id");
-				if (idJson.has("videoId")) {
-					String id = idJson.getString("videoId");
-					ids += id + ",";
-					videoIdList.add(id);
-				}
+			SearchListResponse listResponse = youtube.search()
+				.list("id")
+				.setChannelId(channel.getChannelId())
+				.setOrder("date")
+				.setType("youtube#video")
+				.execute();
+			for (SearchResult item:listResponse.getItems()) {
+				String id = item.getId().getVideoId();
+				ids += id + ",";
+				videoIdList.add(id);
 			}
 		}
 
-		requestUrl = "https://www.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails&id="
-				+ ids;
 
-		Response oResp = doAuthorizedRequest(session, requestUrl);
-
-		JSONObject responseBody = new JSONObject(oResp.getBody());
-		if (!responseBody.has("error")) {
-			JSONArray videos = responseBody.getJSONArray("items");
-
-			for (int i = 0; i < videos.length(); i++) {
-				Video video = new Video(videos.getJSONObject(i));
-				videoList.put(video.getId(), video);
+		VideoListResponse videoListResponse = youtube.videos()
+			.list("snippet,contentDetails")
+			.setId(ids)
+			.execute();
+		
+		for (Video v:videoListResponse.getItems()){
+			YTVideo video = new YTVideo(v);
+		videoList.put(video.getId(), video);
 			}
-		}
+		
+		
 		return videoList;
 
-	}
-
-	private Response doAuthorizedRequest(HttpSession session, String url) {
-		Token token = (Token) session.getAttribute("token");
-		OAuthService service = (OAuthService) session
-				.getAttribute("oauth2Service");
-		if (service == null)
-			service = OAuthServiceProvider.getService();
-		OAuthRequest oReq = new OAuthRequest(Verb.GET, url);
-		service.signRequest(token, oReq);
-		Response oResp = oReq.send();
-		return oResp;
 	}
 
 }
