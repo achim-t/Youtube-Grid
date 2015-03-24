@@ -63,6 +63,8 @@ public class Index extends HttpServlet {
 		}
 
 		subscriptions.addAll(channelList);
+		
+		subscriptions=user.getActiveSubscriptions();
 
 		if (subscriptions.size() > 0) {
 			request.setAttribute("channelList", subscriptions);

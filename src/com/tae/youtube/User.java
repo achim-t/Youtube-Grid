@@ -28,6 +28,13 @@ public class User implements Serializable{
 	public Date getCreatedAt() {
 		return createdAt;
 	}
+	public Set<Channel> getActiveSubscriptions() {
+		Set<Channel> temp = new HashSet<>();
+		for (Channel channel: subscriptions)
+			if (channel.isActive())
+				temp.add(channel);
+		return temp;
+	}
 
 	
 }
