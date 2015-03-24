@@ -56,9 +56,9 @@ public class Login extends HttpServlet {
 			user = new User();
 			user.setId(youtubeId);
 			users.set(youtubeId, user);
-			session.setAttribute("youtube_id", youtubeId);
 			System.out.println("new user created "+user.getId());
 		}
+		session.setAttribute("youtube_id", youtubeId);
 		System.out.println("user was created at: " + user.getCreatedAt());
 		req.getRequestDispatcher("/index").forward(req, resp);
 	}
