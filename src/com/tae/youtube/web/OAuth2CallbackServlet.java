@@ -31,6 +31,6 @@ public class OAuth2CallbackServlet extends HttpServlet {
 		GoogleAuthorizationCodeTokenRequest tokenRequest = Auth.getFlow().newTokenRequest(code);
 		GoogleTokenResponse tokenResponse = tokenRequest.setRedirectUri(Auth.REDIRECT_URI).execute();
 		Auth.getFlow().createAndStoreCredential(tokenResponse, userId);
-		response.sendRedirect("./index");
+		response.sendRedirect("./login");
 	}
 }
