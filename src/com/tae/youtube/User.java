@@ -2,19 +2,21 @@ package com.tae.youtube;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class User implements Serializable{
-	private List<Channel> subscriptions;
+	private Set<Channel> subscriptions;
 	private String id;
 	private Date createdAt;
 	public User(){
 		createdAt = new Date();
+		subscriptions = new HashSet<>();
 	}
-	public List<Channel> getSubscriptions() {
+	public Set<Channel> getSubscriptions() {
 		return subscriptions;
 	}
-	public void setSubscriptions(List<Channel> subscriptions) {
+	public void setSubscriptions(Set<Channel> subscriptions) {
 		this.subscriptions = subscriptions;
 	}
 	public String getId() {

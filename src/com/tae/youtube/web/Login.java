@@ -60,7 +60,7 @@ public class Login extends HttpServlet {
 			System.out.println("new user created "+user.getId());
 		}
 		System.out.println("user was created at: " + user.getCreatedAt());
-
+		req.getRequestDispatcher("/index").forward(req, resp);
 	}
 
 }

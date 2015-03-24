@@ -2,8 +2,10 @@ package com.tae.youtube.web;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -17,6 +19,7 @@ import javax.servlet.http.HttpSession;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.auth.oauth2.TokenResponseException;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
+import com.google.api.client.util.store.DataStore;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.SearchListResponse;
 import com.google.api.services.youtube.model.SearchResult;
@@ -26,6 +29,7 @@ import com.google.api.services.youtube.model.Video;
 import com.google.api.services.youtube.model.VideoListResponse;
 import com.tae.youtube.Auth;
 import com.tae.youtube.Channel;
+import com.tae.youtube.User;
 import com.tae.youtube.YTVideo;
 
 @WebServlet("/index")
@@ -36,20 +40,35 @@ public class Index extends HttpServlet {
 			HttpServletResponse response) throws ServletException, IOException {
 
 		HttpSession session = request.getSession();
-		String userId = session.getId();
-		Credential credential = Auth.getCredential(userId);
-		if (credential == null) {
-			String url = Auth.getAuthorizationUrl();
-			response.sendRedirect(url);
+		String youtubeId = (String) session.getAttribute("youtube_id");
+		DataStore<User> users =(DataStore<User>) getServletContext().getAttribute("users");
+		if (youtubeId==null || ! users.containsKey(youtubeId))
+		{
+			request.getRequestDispatcher("/login").forward(request, response);
 			return;
 		}
+		User user = users.get(youtubeId);
+		Credential credential = Auth.getCredential(session.getId());
+
 		YouTube youtube = new YouTube.Builder(Auth.HTTP_TRANSPORT,
 				Auth.JSON_FACTORY, credential).build();
 		request.setAttribute("youtube", youtube);
+		
+		
 		List<Channel> channelList = getSubscriptions(request);
+		Set<Channel> subscriptions = user.getSubscriptions();
+		
+		for (Channel subscription:subscriptions){
+			if (! channelList.contains(subscription))
+				subscription.setActive(false);
+		}
+		
+		subscriptions.addAll(channelList);
+		
+		
 
-		if (channelList.size() > 0) {
-			session.setAttribute("channelList", channelList);
+		if (subscriptions.size() > 0) {
+			request.setAttribute("channelList", subscriptions);
 
 			SortedMap<String, YTVideo> videos = getVideosFromChannelList(request);
 			ArrayList<YTVideo> arrayList = new ArrayList<YTVideo>(
@@ -99,7 +118,7 @@ public class Index extends HttpServlet {
 	private SortedMap<String, YTVideo> getVideosFromChannelList(
 			HttpServletRequest request) throws IOException {
 		YouTube youtube = (YouTube) request.getAttribute("youtube");
-		List<Channel> channelList = (List<Channel>) request
+		Collection<Channel> channelList = (Collection<Channel>) request
 				.getAttribute("channelList");
 		SortedMap<String, YTVideo> videoList = new TreeMap<>();
 		List<String> videoIdList = new ArrayList<>();
