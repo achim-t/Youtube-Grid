@@ -41,9 +41,9 @@ public class Index extends HttpServlet {
 
 		HttpSession session = request.getSession();
 		String youtubeId = (String) session.getAttribute("youtube_id");
-		DataStore<User> users =(DataStore<User>) getServletContext().getAttribute("users");
-		if (youtubeId==null || ! users.containsKey(youtubeId))
-		{
+		DataStore<User> users = (DataStore<User>) getServletContext()
+				.getAttribute("users");
+		if (youtubeId == null || !users.containsKey(youtubeId)) {
 			request.getRequestDispatcher("/login").forward(request, response);
 			return;
 		}
@@ -53,19 +53,16 @@ public class Index extends HttpServlet {
 		YouTube youtube = new YouTube.Builder(Auth.HTTP_TRANSPORT,
 				Auth.JSON_FACTORY, credential).build();
 		request.setAttribute("youtube", youtube);
-		
-		
+
 		List<Channel> channelList = getSubscriptions(request);
 		Set<Channel> subscriptions = user.getSubscriptions();
-		
-		for (Channel subscription:subscriptions){
-			if (! channelList.contains(subscription))
+
+		for (Channel subscription : subscriptions) {
+			if (!channelList.contains(subscription))
 				subscription.setActive(false);
 		}
-		
+
 		subscriptions.addAll(channelList);
-		
-		
 
 		if (subscriptions.size() > 0) {
 			request.setAttribute("channelList", subscriptions);
@@ -81,6 +78,7 @@ public class Index extends HttpServlet {
 		} else {
 			response.getWriter().println("no subscriptions found");
 		}
+		users.set(user.getId(), user);
 
 	}
 
