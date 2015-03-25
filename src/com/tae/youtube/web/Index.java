@@ -63,8 +63,7 @@ public class Index extends HttpServlet {
 		}
 
 		allSubscriptions.addAll(currentSubscriptions);
-		
-		
+
 		List<Channel> activeSubscriptions = user.getActiveSubscriptions();
 
 		if (activeSubscriptions.size() > 0) {
@@ -120,24 +119,23 @@ public class Index extends HttpServlet {
 
 		for (Channel channel : channelList) {
 			String ids = "";
-			com.google.api.services.youtube.YouTube.Search.List searchList = youtube.search().list("id")
-			.setChannelId(channel.getChannelId()).setOrder("date")
-			.setType("youtube#video").setMaxResults(50L);
+			com.google.api.services.youtube.YouTube.Search.List searchList = youtube
+					.search().list("id").setChannelId(channel.getChannelId())
+					.setOrder("date").setType("video").setMaxResults(50L);
 			DateTime publishedAt;
 			try {
 				YTVideo newestVideo = channel.getNewestVideo();
 				publishedAt = newestVideo.getPublishedAt();
 				searchList.setPublishedAfter(publishedAt);
 			} catch (NoSuchElementException e) {
-				
+
 			}
 			SearchListResponse listResponse = searchList.execute();
-			System.out.println(listResponse.toPrettyString());
 			for (SearchResult item : listResponse.getItems()) {
 				String id = item.getId().getVideoId();
-				ids += id + ",";
+				ids += "," + id;
 			}
-
+			ids = ids.substring(1);
 			VideoListResponse videoListResponse = youtube.videos()
 					.list("snippet,contentDetails").setId(ids).execute();
 
