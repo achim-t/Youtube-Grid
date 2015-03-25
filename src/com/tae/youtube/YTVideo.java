@@ -6,6 +6,7 @@ import com.google.api.client.util.DateTime;
 import com.google.api.services.youtube.model.Video;
 import com.google.api.services.youtube.model.VideoSnippet;
 
+@SuppressWarnings("serial")
 public class YTVideo  implements Comparable<YTVideo>, Serializable{
 	private String id;
 	private String channelId;

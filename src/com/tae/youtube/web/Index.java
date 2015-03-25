@@ -5,9 +5,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -19,6 +18,7 @@ import javax.servlet.http.HttpSession;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.auth.oauth2.TokenResponseException;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
+import com.google.api.client.util.DateTime;
 import com.google.api.client.util.store.DataStore;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.SearchListResponse;
@@ -54,27 +54,23 @@ public class Index extends HttpServlet {
 				Auth.JSON_FACTORY, credential).build();
 		request.setAttribute("youtube", youtube);
 
-		List<Channel> channelList = getSubscriptions(request);
-		Set<Channel> subscriptions = user.getSubscriptions();
+		List<Channel> currentSubscriptions = getSubscriptions(request);
+		Set<Channel> allSubscriptions = user.getSubscriptions();
 
-		for (Channel subscription : subscriptions) {
-			if (!channelList.contains(subscription))
+		for (Channel subscription : allSubscriptions) {
+			if (!currentSubscriptions.contains(subscription))
 				subscription.setActive(false);
 		}
 
-		subscriptions.addAll(channelList);
+		allSubscriptions.addAll(currentSubscriptions);
 		
-		subscriptions=user.getActiveSubscriptions();
+		
+		List<Channel> activeSubscriptions = user.getActiveSubscriptions();
 
-		if (subscriptions.size() > 0) {
-			request.setAttribute("channelList", subscriptions);
-
-			SortedMap<String, YTVideo> videos = getVideosFromChannelList(request);
-			ArrayList<YTVideo> arrayList = new ArrayList<YTVideo>(
-					videos.values());
-			Collections.sort(arrayList);
-
-			request.setAttribute("videoList", arrayList);
+		if (activeSubscriptions.size() > 0) {
+			request.setAttribute("channelList", activeSubscriptions);
+			List<YTVideo> videos = getVideosFromChannelList(request);
+			request.setAttribute("videoList", videos);
 			request.getRequestDispatcher("videoView")
 					.forward(request, response);
 		} else {
@@ -115,34 +111,45 @@ public class Index extends HttpServlet {
 		return channelList;
 	}
 
-	private SortedMap<String, YTVideo> getVideosFromChannelList(
-			HttpServletRequest request) throws IOException {
+	private List<YTVideo> getVideosFromChannelList(HttpServletRequest request)
+			throws IOException {
 		YouTube youtube = (YouTube) request.getAttribute("youtube");
 		Collection<Channel> channelList = (Collection<Channel>) request
 				.getAttribute("channelList");
-		SortedMap<String, YTVideo> videoList = new TreeMap<>();
-		List<String> videoIdList = new ArrayList<>();
-		String ids = "";
+		List<YTVideo> videoList = new ArrayList<>();
 
 		for (Channel channel : channelList) {
-			SearchListResponse listResponse = youtube.search().list("id")
-					.setChannelId(channel.getChannelId()).setOrder("date")
-					.setType("youtube#video").execute();
+			String ids = "";
+			com.google.api.services.youtube.YouTube.Search.List searchList = youtube.search().list("id")
+			.setChannelId(channel.getChannelId()).setOrder("date")
+			.setType("youtube#video").setMaxResults(50L);
+			DateTime publishedAt;
+			try {
+				YTVideo newestVideo = channel.getNewestVideo();
+				publishedAt = newestVideo.getPublishedAt();
+				searchList.setPublishedAfter(publishedAt);
+			} catch (NoSuchElementException e) {
+				
+			}
+			SearchListResponse listResponse = searchList.execute();
+			System.out.println(listResponse.toPrettyString());
 			for (SearchResult item : listResponse.getItems()) {
 				String id = item.getId().getVideoId();
 				ids += id + ",";
-				videoIdList.add(id);
 			}
+
+			VideoListResponse videoListResponse = youtube.videos()
+					.list("snippet,contentDetails").setId(ids).execute();
+
+			for (Video v : videoListResponse.getItems()) {
+				YTVideo video = new YTVideo(v);
+				channel.addVideo(video);
+
+			}
+			videoList.addAll(channel.getVideos());
 		}
 
-		VideoListResponse videoListResponse = youtube.videos()
-				.list("snippet,contentDetails").setId(ids).execute();
-
-		for (Video v : videoListResponse.getItems()) {
-			YTVideo video = new YTVideo(v);
-			videoList.put(video.getId(), video);
-		}
-
+		Collections.sort(videoList);
 		return videoList;
 
 	}
