@@ -1,10 +1,13 @@
 package com.tae.youtube;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+@SuppressWarnings("serial")
 public class User implements Serializable{
 	private Set<Channel> subscriptions;
 	private String id;
@@ -28,8 +31,8 @@ public class User implements Serializable{
 	public Date getCreatedAt() {
 		return createdAt;
 	}
-	public Set<Channel> getActiveSubscriptions() {
-		Set<Channel> temp = new HashSet<>();
+	public List<Channel> getActiveSubscriptions() {
+		List<Channel> temp = new ArrayList<>();
 		for (Channel channel: subscriptions)
 			if (channel.isActive())
 				temp.add(channel);
