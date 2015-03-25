@@ -50,7 +50,7 @@ public class YTVideo  implements Comparable<YTVideo>, Serializable{
 
 
 	public String getDuration() {
-		return duration;
+		return duration.substring(2).replaceAll("[HM]", ":").replace("S", "");
 	}
 
 
