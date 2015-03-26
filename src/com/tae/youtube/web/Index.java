@@ -1,12 +1,7 @@
 package com.tae.youtube.web;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -15,17 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.google.api.client.auth.oauth2.TokenResponseException;
-import com.google.api.client.googleapis.json.GoogleJsonResponseException;
-import com.google.api.client.util.DateTime;
-import com.google.api.services.youtube.YouTube;
-import com.google.api.services.youtube.model.SearchListResponse;
-import com.google.api.services.youtube.model.SearchResult;
-import com.google.api.services.youtube.model.Subscription;
-import com.google.api.services.youtube.model.SubscriptionListResponse;
-import com.google.api.services.youtube.model.Video;
-import com.google.api.services.youtube.model.VideoListResponse;
-import com.tae.youtube.Channel;
 import com.tae.youtube.User;
 import com.tae.youtube.YTVideo;
 
@@ -34,116 +18,31 @@ public class Index extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	protected void doGet(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException{
+			HttpServletResponse response) throws ServletException, IOException {
 
 		HttpSession session = request.getSession();
 		String youtubeId = (String) session.getAttribute("youtube_id");
-		
-		if (youtubeId == null ) {
+
+		if (youtubeId == null) {
 			request.getRequestDispatcher("/login").forward(request, response);
 			return;
 		}
 		User user = User.getById(youtubeId);
-		
 
-		List<Channel> currentSubscriptions = getSubscriptions(user, session.getId());
-		Set<Channel> allSubscriptions = user.getSubscriptions();
+		String sessionId = session.getId();
 
-		for (Channel subscription : allSubscriptions) {
-			if (!currentSubscriptions.contains(subscription))
-				subscription.setActive(false);
-		}
+		List<YTVideo> videos = user.getVideos(sessionId);
 
-		allSubscriptions.addAll(currentSubscriptions);
-
-		List<Channel> activeSubscriptions = user.getActiveSubscriptions();
-
-		if (activeSubscriptions.size() > 0) {
-			
-			List<YTVideo> videos = getVideosFromChannelList(user, activeSubscriptions, session.getId());
+		if (videos.size() > 0) {
 			if (videos.size() > 25)
 				request.setAttribute("videoList", videos.subList(0, 25));
-			else
+			else {
 				request.setAttribute("videoList", videos);
+			}
 			request.getRequestDispatcher("videoView")
 					.forward(request, response);
-		} else {
+		} else
 			response.getWriter().println("no subscriptions found");
-		}
-		
-
-	}
-
-	private List<Channel> getSubscriptions(User user, String sessionId)
-			throws IOException {
-		
-		YouTube youtube = user.getYoutube(sessionId);
-		
-		List<Channel> channelList = new ArrayList<>();
-
-		String nextPageToken = "";
-
-		do {
-
-			SubscriptionListResponse subscriptionListResponse = null;
-			try {
-				subscriptionListResponse = youtube.subscriptions()
-						.list("snippet").setMine(true).setMaxResults((long) 50)
-						.execute();
-			} catch (TokenResponseException | GoogleJsonResponseException e) {
-				// TODO Auto-generated catch block
-				System.out.println(e);
-//				Auth.deleteUserFromCredentialDataStore(request.getSession()
-//						.getId());
-				// response.sendRedirect("/Test/home");
-				// return;
-			}
-			for (Subscription sub : subscriptionListResponse.getItems()) {
-				channelList.add(new Channel(sub));
-			}
-		} while (nextPageToken.length() > 0); // TODO
-
-		return channelList;
-	}
-
-	private List<YTVideo> getVideosFromChannelList(User user, Collection<Channel> channelList, String sessionId)
-			throws IOException {
-		YouTube youtube = user.getYoutube(sessionId);
-		
-		List<YTVideo> videoList = new ArrayList<>();
-
-		for (Channel channel : channelList) {
-			String ids = "";
-			com.google.api.services.youtube.YouTube.Search.List searchList = youtube
-					.search().list("id").setChannelId(channel.getChannelId())
-					.setOrder("date").setType("video").setMaxResults(50L);
-			DateTime publishedAt;
-			try {
-				YTVideo newestVideo = channel.getNewestVideo();
-				publishedAt = newestVideo.getPublishedAt();
-				searchList.setPublishedAfter(publishedAt);
-			} catch (NoSuchElementException e) {
-
-			}
-			SearchListResponse listResponse = searchList.execute();
-			for (SearchResult item : listResponse.getItems()) {
-				String id = item.getId().getVideoId();
-				ids += "," + id;
-			}
-			ids = ids.substring(1);
-			VideoListResponse videoListResponse = youtube.videos()
-					.list("snippet,contentDetails").setId(ids).execute();
-
-			for (Video v : videoListResponse.getItems()) {
-				YTVideo video = new YTVideo(v);
-				channel.addVideo(video);
-
-			}
-			videoList.addAll(channel.getVideos());
-		}
-
-		Collections.sort(videoList);
-		return videoList;
 
 	}
 
