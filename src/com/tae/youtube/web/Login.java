@@ -40,17 +40,13 @@ public class Login extends HttpServlet {
 					Auth.JSON_FACTORY, credential).build();
 			ChannelListResponse list = youtube.channels().list("id").setMine(true).execute();
 			youtubeId = list.getItems().get(0).getId();
-			
+			if (youtubeId != null) {
+				user = User.createUser(youtubeId);
+			}// TODO else maybe!
+
+			session.setAttribute("youtube_id", youtubeId);
+			System.out.println("user was created at: " + user.getCreatedAt());
 		}
-		
-		
-		if (youtubeId != null) {
-			user = User.getById(youtubeId);
-		}
-		
-		// TODO else !
-		session.setAttribute("youtube_id", youtubeId);
-		System.out.println("user was created at: " + user.getCreatedAt());
 		req.getRequestDispatcher("/index").forward(req, resp);
 	}
 

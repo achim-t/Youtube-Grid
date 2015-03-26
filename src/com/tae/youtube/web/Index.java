@@ -22,12 +22,11 @@ public class Index extends HttpServlet {
 
 		HttpSession session = request.getSession();
 		String youtubeId = (String) session.getAttribute("youtube_id");
-
-		if (youtubeId == null) {
+		User user = User.getByYouTubeId(youtubeId);
+		if (youtubeId == null || user == null) {
 			request.getRequestDispatcher("/login").forward(request, response);
 			return;
 		}
-		User user = User.getById(youtubeId);
 
 		String sessionId = session.getId();
 

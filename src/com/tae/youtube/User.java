@@ -37,7 +37,7 @@ public class User implements Serializable {
 	private static DataStore<User> userDataStore;
 	private transient YouTube youtube;
 
-	public YouTube getYoutube(String sessionId) throws IOException{
+	public YouTube getYoutube(String sessionId) throws IOException {
 		if (youtube == null) {
 			Credential credential = Auth.getCredential(sessionId);
 
@@ -97,7 +97,7 @@ public class User implements Serializable {
 		users = new HashMap<>();
 	}
 
-	public static User getById(String id) {
+	public static User getByYouTubeId(String id) {
 		if (users.containsKey(id))
 			return users.get(id);
 
@@ -110,11 +110,9 @@ public class User implements Serializable {
 			// TODO Auto-generated catch block
 
 			e.printStackTrace();
-		} finally {
-			if (user == null)
-				user = createUser(id);
 		}
-		users.put(id, user);
+		if (user != null)
+			users.put(id, user);
 		return user;
 	}
 
@@ -152,8 +150,9 @@ public class User implements Serializable {
 		List<Channel> activeSubscriptions = getActiveSubscriptions();
 		return getVideosFromChannelList(activeSubscriptions, sessionId);
 	}
-	
-	private List<YTVideo> getVideosFromChannelList(Collection<Channel> channelList, String sessionId)
+
+	private List<YTVideo> getVideosFromChannelList(
+			Collection<Channel> channelList, String sessionId)
 			throws IOException {
 		List<YTVideo> videoList = new ArrayList<>();
 
@@ -191,9 +190,10 @@ public class User implements Serializable {
 		return videoList;
 
 	}
+
 	private List<Channel> getSubscriptionsFromYouTube(String sessionId)
 			throws IOException {
-		
+
 		List<Channel> channelList = new ArrayList<>();
 
 		String nextPageToken = "";
@@ -208,8 +208,8 @@ public class User implements Serializable {
 			} catch (TokenResponseException | GoogleJsonResponseException e) {
 				// TODO Auto-generated catch block
 				System.out.println(e);
-//				Auth.deleteUserFromCredentialDataStore(request.getSession()
-//						.getId());
+				// Auth.deleteUserFromCredentialDataStore(request.getSession()
+				// .getId());
 				// response.sendRedirect("/Test/home");
 				// return;
 			}
