@@ -21,6 +21,7 @@ import com.google.api.client.util.DateTime;
 import com.google.api.client.util.store.DataStore;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.youtube.YouTube;
+import com.google.api.services.youtube.model.ChannelListResponse;
 import com.google.api.services.youtube.model.SearchListResponse;
 import com.google.api.services.youtube.model.SearchResult;
 import com.google.api.services.youtube.model.Subscription;
@@ -36,6 +37,34 @@ public class User implements Serializable {
 	private static Map<String, User> users;
 	private static DataStore<User> userDataStore;
 	private transient YouTube youtube;
+	private String name;
+
+	
+	public static User createUser(Credential credential) throws IOException{
+		User user = null;
+		YouTube youtube = new YouTube.Builder(Auth.HTTP_TRANSPORT,
+				Auth.JSON_FACTORY, credential).build();
+		ChannelListResponse list = youtube.channels().list("snippet").setMine(true).execute();
+		String youtubeId = list.getItems().get(0).getId();
+		String name = list.getItems().get(0).getSnippet().getTitle();
+		if (youtubeId != null) {
+			user = new User();
+			user.setId(youtubeId);
+			user.setName(name);
+			User.users.put(youtubeId, user);
+			
+		}
+		return user;
+	}
+
+	
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getName(){
+		return name;
+	}
 
 	public YouTube getYoutube(String sessionId) throws IOException {
 		if (youtube == null) {
@@ -127,13 +156,7 @@ public class User implements Serializable {
 		}
 	}
 
-	public static User createUser(String id) {
-		User user = new User();
-		user.setId(id);
-		users.put(id, user);
-		return user;
 
-	}
 
 	public List<YTVideo> getVideos(String sessionId) throws IOException {
 		getYoutube(sessionId);
