@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.auth.oauth2.TokenResponseException;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.util.DateTime;
@@ -26,7 +25,6 @@ import com.google.api.services.youtube.model.Subscription;
 import com.google.api.services.youtube.model.SubscriptionListResponse;
 import com.google.api.services.youtube.model.Video;
 import com.google.api.services.youtube.model.VideoListResponse;
-import com.tae.youtube.Auth;
 import com.tae.youtube.Channel;
 import com.tae.youtube.User;
 import com.tae.youtube.YTVideo;
@@ -36,7 +34,7 @@ public class Index extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	protected void doGet(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+			HttpServletResponse response) throws ServletException, IOException{
 
 		HttpSession session = request.getSession();
 		String youtubeId = (String) session.getAttribute("youtube_id");
@@ -46,13 +44,9 @@ public class Index extends HttpServlet {
 			return;
 		}
 		User user = User.getById(youtubeId);
-		Credential credential = Auth.getCredential(session.getId());
+		
 
-		YouTube youtube = new YouTube.Builder(Auth.HTTP_TRANSPORT,
-				Auth.JSON_FACTORY, credential).build();
-		request.setAttribute("youtube", youtube);
-
-		List<Channel> currentSubscriptions = getSubscriptions(request);
+		List<Channel> currentSubscriptions = getSubscriptions(user, session.getId());
 		Set<Channel> allSubscriptions = user.getSubscriptions();
 
 		for (Channel subscription : allSubscriptions) {
@@ -65,8 +59,8 @@ public class Index extends HttpServlet {
 		List<Channel> activeSubscriptions = user.getActiveSubscriptions();
 
 		if (activeSubscriptions.size() > 0) {
-			request.setAttribute("channelList", activeSubscriptions);
-			List<YTVideo> videos = getVideosFromChannelList(request);
+			
+			List<YTVideo> videos = getVideosFromChannelList(user, activeSubscriptions, session.getId());
 			if (videos.size() > 25)
 				request.setAttribute("videoList", videos.subList(0, 25));
 			else
@@ -80,10 +74,11 @@ public class Index extends HttpServlet {
 
 	}
 
-	private List<Channel> getSubscriptions(HttpServletRequest request)
+	private List<Channel> getSubscriptions(User user, String sessionId)
 			throws IOException {
-		// HttpSession session
-		YouTube youtube = (YouTube) request.getAttribute("youtube");
+		
+		YouTube youtube = user.getYoutube(sessionId);
+		
 		List<Channel> channelList = new ArrayList<>();
 
 		String nextPageToken = "";
@@ -98,8 +93,8 @@ public class Index extends HttpServlet {
 			} catch (TokenResponseException | GoogleJsonResponseException e) {
 				// TODO Auto-generated catch block
 				System.out.println(e);
-				Auth.deleteUserFromCredentialDataStore(request.getSession()
-						.getId());
+//				Auth.deleteUserFromCredentialDataStore(request.getSession()
+//						.getId());
 				// response.sendRedirect("/Test/home");
 				// return;
 			}
@@ -111,11 +106,10 @@ public class Index extends HttpServlet {
 		return channelList;
 	}
 
-	private List<YTVideo> getVideosFromChannelList(HttpServletRequest request)
+	private List<YTVideo> getVideosFromChannelList(User user, Collection<Channel> channelList, String sessionId)
 			throws IOException {
-		YouTube youtube = (YouTube) request.getAttribute("youtube");
-		Collection<Channel> channelList = (Collection<Channel>) request
-				.getAttribute("channelList");
+		YouTube youtube = user.getYoutube(sessionId);
+		
 		List<YTVideo> videoList = new ArrayList<>();
 
 		for (Channel channel : channelList) {

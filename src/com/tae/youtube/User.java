@@ -11,8 +11,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.util.store.DataStore;
 import com.google.api.client.util.store.FileDataStoreFactory;
+import com.google.api.services.youtube.YouTube;
 
 @SuppressWarnings("serial")
 public class User implements Serializable {
@@ -21,6 +23,17 @@ public class User implements Serializable {
 	private Date createdAt;
 	private static Map<String, User> users;
 	private static DataStore<User> userDataStore;
+	private transient YouTube youtube;
+
+	public YouTube getYoutube(String sessionId) throws IOException{
+		if (youtube == null) {
+			Credential credential = Auth.getCredential(sessionId);
+
+			youtube = new YouTube.Builder(Auth.HTTP_TRANSPORT,
+					Auth.JSON_FACTORY, credential).build();
+		}
+		return youtube;
+	}
 
 	private User() {
 		createdAt = new Date();
