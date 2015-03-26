@@ -45,8 +45,9 @@ public class User implements Serializable {
 		YouTube youtube = new YouTube.Builder(Auth.HTTP_TRANSPORT,
 				Auth.JSON_FACTORY, credential).build();
 		ChannelListResponse list = youtube.channels().list("snippet").setMine(true).execute();
-		String youtubeId = list.getItems().get(0).getId();
-		String name = list.getItems().get(0).getSnippet().getTitle();
+		com.google.api.services.youtube.model.Channel channel = list.getItems().get(0);
+		String youtubeId = channel.getId();
+		String name = channel.getSnippet().getTitle();
 		if (youtubeId != null) {
 			user = new User();
 			user.setId(youtubeId);
