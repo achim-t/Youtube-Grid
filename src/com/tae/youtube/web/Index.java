@@ -69,7 +69,10 @@ public class Index extends HttpServlet {
 		if (activeSubscriptions.size() > 0) {
 			request.setAttribute("channelList", activeSubscriptions);
 			List<YTVideo> videos = getVideosFromChannelList(request);
-			request.setAttribute("videoList", videos);
+			if (videos.size() > 25)
+				request.setAttribute("videoList", videos.subList(0, 25));
+			else
+				request.setAttribute("videoList", videos);
 			request.getRequestDispatcher("videoView")
 					.forward(request, response);
 		} else {
