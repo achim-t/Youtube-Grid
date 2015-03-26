@@ -19,7 +19,6 @@ import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.auth.oauth2.TokenResponseException;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.util.DateTime;
-import com.google.api.client.util.store.DataStore;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.SearchListResponse;
 import com.google.api.services.youtube.model.SearchResult;
@@ -41,13 +40,12 @@ public class Index extends HttpServlet {
 
 		HttpSession session = request.getSession();
 		String youtubeId = (String) session.getAttribute("youtube_id");
-		DataStore<User> users = (DataStore<User>) getServletContext()
-				.getAttribute("users");
-		if (youtubeId == null || !users.containsKey(youtubeId)) {
+		
+		if (youtubeId == null ) {
 			request.getRequestDispatcher("/login").forward(request, response);
 			return;
 		}
-		User user = users.get(youtubeId);
+		User user = User.getById(youtubeId);
 		Credential credential = Auth.getCredential(session.getId());
 
 		YouTube youtube = new YouTube.Builder(Auth.HTTP_TRANSPORT,
@@ -78,7 +76,7 @@ public class Index extends HttpServlet {
 		} else {
 			response.getWriter().println("no subscriptions found");
 		}
-		users.set(user.getId(), user);
+		
 
 	}
 

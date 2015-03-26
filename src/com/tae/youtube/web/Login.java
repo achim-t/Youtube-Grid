@@ -10,9 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.util.store.DataStore;
 import com.google.api.services.youtube.YouTube;
-import com.google.api.services.youtube.YouTube.Channels.List;
 import com.google.api.services.youtube.model.ChannelListResponse;
 import com.tae.youtube.Auth;
 import com.tae.youtube.User;
@@ -26,8 +24,7 @@ public class Login extends HttpServlet {
 			throws ServletException, IOException {
 		HttpSession session = req.getSession();
 		String youtubeId = (String) session.getAttribute("youtube_id");
-		DataStore<User> users = (DataStore<User>) getServletContext()
-				.getAttribute("users");
+		
 		User user = null;
 		
 		
@@ -47,17 +44,11 @@ public class Login extends HttpServlet {
 		}
 		
 		
-		if (youtubeId != null && users.containsKey(youtubeId)) {
-			user = users.get(youtubeId);
-			System.out.println("returning user found "+user.getId());
+		if (youtubeId != null) {
+			user = User.getById(youtubeId);
 		}
 		
-		if (user==null) {
-			user = new User();
-			user.setId(youtubeId);
-			users.set(youtubeId, user);
-			System.out.println("new user created "+user.getId());
-		}
+		// TODO else !
 		session.setAttribute("youtube_id", youtubeId);
 		System.out.println("user was created at: " + user.getCreatedAt());
 		req.getRequestDispatcher("/index").forward(req, resp);
