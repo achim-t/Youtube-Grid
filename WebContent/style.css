@@ -1,3 +1,5 @@
+
+
 .video-duration {
 position: absolute;
 	display: inline;
@@ -13,6 +15,40 @@ position: absolute;
 	right: 2px;
 	bottom: 3px;
 	padding: 0 3px 0 3px;
+}
+
+.video:hover .img-container .video-duration {
+	display: none;
+}
+
+.video:hover .img-container .mark-watched{
+	display: inline
+}
+.video:hover .img-container .filter {
+	display:inline;
+}
+.filter {
+	position: absolute;
+	display: none;
+	color: #eee;
+	background: #111;
+	bottom: 10px;
+	left: 10px;
+	
+}
+
+.mark-watched {
+	position: absolute;
+	display: none;
+	color: #eee;
+	background: #111;
+	bottom: 10px;
+	right: 10px;
+/* 	height: 16px;	 */
+}
+
+.muted {
+	opacity: 0.3;
 }
 
 .video {
@@ -46,11 +82,12 @@ position: absolute;
 	font-size: 90%;
 	height: 3.5em;
 	text-decoration: none;
-	color: #333;
+	color: red;
+/* 	color: #333; */
 	overflow: hidden;
-	text-align: center;
+/* 	text-align: center; */
 	font-weight: 600;
-	width: 90%;
+/* 	width: 90%; */
 	margin-left: 5%;
 
 }
