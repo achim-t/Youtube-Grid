@@ -29,19 +29,20 @@ public class Index extends HttpServlet {
 		}
 
 		String sessionId = session.getId();
+		request.getRequestDispatcher("videoView").forward(request, response);
 
-		List<YTVideo> videos = user.getVideos(sessionId);
-
-		if (videos.size() > 0) {
-			if (videos.size() > 25)
-				request.setAttribute("videoList", videos.subList(0, 25));
-			else {
-				request.setAttribute("videoList", videos);
-			}
-			request.getRequestDispatcher("videoView")
-					.forward(request, response);
-		} else
-			response.getWriter().println("no subscriptions found");
+		// List<YTVideo> videos = user.getVideos(sessionId);
+		//
+		// if (videos.size() > 0) {
+		// if (videos.size() > 25)
+		// request.setAttribute("videoList", videos.subList(0, 25));
+		// else {
+		// request.setAttribute("videoList", videos);
+		// }
+		// request.getRequestDispatcher("videoView")
+		// .forward(request, response);
+		// } else
+		// response.getWriter().println("no subscriptions found");
 
 	}
 
