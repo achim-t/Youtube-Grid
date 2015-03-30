@@ -30,11 +30,23 @@ position: absolute;
 .filter {
 	position: absolute;
 	display: none;
-	color: #eee;
-	background: #111;
+	background-color: white;
+    color: red;
 	bottom: 10px;
 	left: 10px;
+    
 	
+}
+.filter a {
+    text-decoration: none;
+    color: black;
+    background: #eee;
+}
+
+.mark_watched a {
+    text-decoration: none;
+    color: black;
+    background: #eee;
 }
 
 .mark-watched {
@@ -90,6 +102,10 @@ position: absolute;
 /* 	width: 90%; */
 	margin-left: 5%;
 
+}
+
+.title:hover {
+    text-decoration: none;
 }
 
 /* Sticky footer styles
