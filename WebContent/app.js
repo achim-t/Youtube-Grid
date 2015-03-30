@@ -50,4 +50,11 @@ $(function() {
 	
 	$("#cbWatched").on("click", toggleWatched);
 	$(".mark-watched").on("click", watched);
+	$('#btnMarkAll').on("click", function(){
+		$('.video').addClass("muted");
+		if (!$("#cbWatched").hasClass("active")) {
+
+			$('.video').hide();
+		}
+	});
 });
