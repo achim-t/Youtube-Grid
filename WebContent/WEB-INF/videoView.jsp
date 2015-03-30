@@ -25,6 +25,16 @@
 			<div class="img-container">
 				<a href="https://www.youtube.com/watch?v=<%=video.getId()%>"><img
 					src='<%=video.getThumbnailUrl()%>' /></a> <span class="video-duration"><%=video.getDuration()%></span>
+					<div class="mark-watched">
+					<a href="#" title="mark as watched"> <span
+						class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+					</a>
+				</div>
+				<div class="filter">
+					<a href="#" title="Filter Videos like this"> <span
+						class="glyphicon glyphicon-filter" aria-hidden="true"></span>
+					</a>
+				</div>
 			</div>
 			<%-- <td><%= video.getPublishedAt() %> --%>
 		</div>
@@ -38,5 +48,6 @@
 	<script src="https://code.jquery.com/jquery-git2.min.js"></script>
 	<script
 		src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+		<script src="./app.js"></script>
 </body>
 </html>
