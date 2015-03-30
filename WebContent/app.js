@@ -4,7 +4,7 @@
 $(function() {
 	toggleWatched = function() {
 		
-		if ($(this).hasClass("active")) {
+		if (this.checked) {
 
 			$(".muted").show();
 		} else {
@@ -18,7 +18,7 @@ $(function() {
 		var video = $(this).closest(".video");
 		video.addClass("muted");
 		$(this).on("click", unwatched);
-		if (!$("#cbWatched").hasClass("active")) {
+		if (!$("#cbWatched").is(":checked")) {
 
 			video.hide();
 		}
@@ -48,11 +48,11 @@ $(function() {
 		});
 	}
 	
-	$("#cbWatched").on("click", toggleWatched);
+	$("#cbWatched").on("change", toggleWatched);
 	$(".mark-watched").on("click", watched);
 	$('#btnMarkAll').on("click", function(){
 		$('.video').addClass("muted");
-		if (!$("#cbWatched").hasClass("active")) {
+		if (!$("#cbWatched").is(":checked")) {
 
 			$('.video').hide();
 		}
