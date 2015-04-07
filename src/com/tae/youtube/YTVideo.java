@@ -44,6 +44,20 @@ public class YTVideo implements Comparable<YTVideo>, Serializable {
 		return newDuration;
 	}
 
+	@Override
+	public int hashCode() {
+		
+		return id.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof YTVideo))
+			return false;
+		YTVideo other = (YTVideo) obj;
+		return id.equals(other.getId());
+	}
+
 	private static String getRegex(String date) {
 	    for (String r : regexMap.keySet())
 	        if (Pattern.matches(r, date))
