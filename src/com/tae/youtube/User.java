@@ -11,13 +11,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Set;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.auth.oauth2.TokenResponseException;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
-import com.google.api.client.util.DateTime;
 import com.google.api.client.util.store.DataStore;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.youtube.YouTube;
@@ -41,12 +39,15 @@ public class User implements Serializable {
 
 	private static Map<String, User> users;
 	private static DataStore<User> userDataStore;
-	public static User createUser(Credential credential) throws IOException{
+
+	public static User createUser(Credential credential) throws IOException {
 		User user = null;
 		YouTube youtube = new YouTube.Builder(Auth.HTTP_TRANSPORT,
 				Auth.JSON_FACTORY, credential).build();
-		ChannelListResponse list = youtube.channels().list("snippet").setMine(true).execute();
-		com.google.api.services.youtube.model.Channel channel = list.getItems().get(0);
+		ChannelListResponse list = youtube.channels().list("snippet")
+				.setMine(true).execute();
+		com.google.api.services.youtube.model.Channel channel = list.getItems()
+				.get(0);
 		String youtubeId = channel.getId();
 		String name = channel.getSnippet().getTitle();
 		if (youtubeId != null) {
@@ -54,17 +55,16 @@ public class User implements Serializable {
 			user.setId(youtubeId);
 			user.setName(name);
 			User.users.put(youtubeId, user);
-			
+
 		}
 		return user;
 	}
 
-	
 	public void setName(String name) {
 		this.name = name;
 	}
 
-	public String getName(){
+	public String getName() {
 		return name;
 	}
 
@@ -159,8 +159,7 @@ public class User implements Serializable {
 		}
 	}
 
-
-	public List<YTVideo> getSavedVideos(){
+	public List<YTVideo> getSavedVideos() {
 		List<YTVideo> videoList = new ArrayList<>();
 		videoList.addAll(videos);
 		return videoList;
@@ -179,18 +178,18 @@ public class User implements Serializable {
 		allSubscriptions.addAll(currentSubscriptions);
 
 		List<Channel> activeSubscriptions = getActiveSubscriptions();
-		
-		List<YTVideo> list = getVideosFromChannelList(activeSubscriptions, sessionId);
+
+		List<YTVideo> list = getVideosFromChannelList(activeSubscriptions,
+				sessionId);
 		List<YTVideo> result = new ArrayList<>();
-		for (YTVideo video : list){
-			if (!videos.contains(video)){
+		for (YTVideo video : list) {
+			if (!videos.contains(video)) {
 				result.add(video);
-				
-				
+
 			}
 		}
 		videos.addAll(result);
-		
+
 		return result;
 	}
 
@@ -204,14 +203,14 @@ public class User implements Serializable {
 			com.google.api.services.youtube.YouTube.Search.List searchList = youtube
 					.search().list("id").setChannelId(channel.getChannelId())
 					.setOrder("date").setType("video").setMaxResults(50L);
-			DateTime publishedAt;
-			try {
-				YTVideo newestVideo = channel.getNewestVideo();
-				publishedAt = newestVideo.getPublishedAt();
-				searchList.setPublishedAfter(publishedAt);
-			} catch (NoSuchElementException e) {
-
-			}
+//			DateTime publishedAt;
+//			try {
+//				YTVideo newestVideo = channel.getNewestVideo();
+//				publishedAt = newestVideo.getPublishedAt();
+//				searchList.setPublishedAfter(publishedAt);
+//			} catch (NoSuchElementException e) {
+//
+//			}
 			SearchListResponse listResponse = searchList.execute();
 			for (SearchResult item : listResponse.getItems()) {
 				String id = item.getId().getVideoId();
@@ -223,10 +222,8 @@ public class User implements Serializable {
 
 			for (Video v : videoListResponse.getItems()) {
 				YTVideo video = new YTVideo(v);
-				channel.addVideo(video);
-
+				videoList.add(video);
 			}
-			videoList.addAll(channel.getVideos());
 		}
 
 		Collections.sort(videoList);
