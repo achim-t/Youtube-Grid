@@ -52,7 +52,6 @@ $(function() {
 	}
 
 	$("#cbWatched").on("change", toggleWatched);
-	//$(".mark-watched").on("click", watched);
 	$('#btnMarkAll').on("click", function() {
 		$('.video').addClass("muted");
 		if (!$("#cbWatched").is(":checked")) {
@@ -99,25 +98,18 @@ $(function() {
 			class : 'mark-watched',
 			title : 'mark as watched'
 		}).click(watched).appendTo($imgcontainer);
-//		$a = $('<span>', {
-//			title : 'mark as watched'
-//		}).click(watched)
-//		.appendTo($mark);
 		$('<span>', {
 			class : "glyphicon glyphicon-ok",
 			'aria-hidden' : 'true'
 		}).appendTo($mark);
 		var $filter = $('<div>', {
-			'class' : 'filter'
-		}).appendTo($imgcontainer);
-		$a = $('<a>', {
-			href : '#',
+			'class' : 'filter',
 			title : 'Filter Videos like this'
-		}).appendTo($filter);
+		}).appendTo($imgcontainer);
 		$('<span>', {
 			class : "glyphicon glyphicon-filter",
 			'aria-hidden' : 'true'
-		}).appendTo($a);
+		}).appendTo($filter);
 
 		$video.appendTo($('.container-fluid'));
 	}

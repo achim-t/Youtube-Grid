@@ -30,23 +30,11 @@ position: absolute;
 .filter {
 	position: absolute;
 	display: none;
-	background-color: white;
-    color: red;
+	background: #111;
+    color: #eee;
 	bottom: 10px;
 	left: 10px;
-    
-	
-}
-.filter a {
-    text-decoration: none;
-    color: black;
-    background: #eee;
-}
-
-.mark_watched a {
-    text-decoration: none;
-    color: black;
-    background: #eee;
+	cursor: pointer;
 }
 
 .mark-watched {
@@ -56,7 +44,7 @@ position: absolute;
 	background: #111;
 	bottom: 10px;
 	right: 10px;
-/* 	height: 16px;	 */
+	cursor: pointer;
 }
 
 .muted {
