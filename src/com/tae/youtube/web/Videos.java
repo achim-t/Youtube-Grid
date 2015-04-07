@@ -1,6 +1,7 @@
 package com.tae.youtube.web;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -34,6 +35,8 @@ public class Videos extends HttpServlet {
 			String sessionId = session.getId();
 			videos = user.getVideos(sessionId);
 		}
+		
+		Collections.sort(videos);
 		String json = new Gson().toJson(videos);
 		response.setContentType("application/json");
 	    response.setCharacterEncoding("UTF-8");
