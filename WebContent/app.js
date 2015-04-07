@@ -14,6 +14,7 @@ $(function() {
 	};
 
 	watched = function(e) {
+		console.log("mark as watched");
 		e.preventDefault();
 		var video = $(this).closest(".video");
 		video.addClass("muted");
