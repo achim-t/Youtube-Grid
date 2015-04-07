@@ -179,7 +179,19 @@ public class User implements Serializable {
 		allSubscriptions.addAll(currentSubscriptions);
 
 		List<Channel> activeSubscriptions = getActiveSubscriptions();
-		return getVideosFromChannelList(activeSubscriptions, sessionId);
+		
+		List<YTVideo> list = getVideosFromChannelList(activeSubscriptions, sessionId);
+		List<YTVideo> result = new ArrayList<>();
+		for (YTVideo video : list){
+			if (!videos.contains(video)){
+				result.add(video);
+				
+				
+			}
+		}
+		videos.addAll(result);
+		
+		return result;
 	}
 
 	private List<YTVideo> getVideosFromChannelList(
