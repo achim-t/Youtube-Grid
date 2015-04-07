@@ -31,15 +31,16 @@ import com.google.api.services.youtube.model.VideoListResponse;
 
 @SuppressWarnings("serial")
 public class User implements Serializable {
+
+	private Set<YTVideo> videos;
 	private Set<Channel> subscriptions;
 	private String id;
 	private Date createdAt;
-	private static Map<String, User> users;
-	private static DataStore<User> userDataStore;
 	private transient YouTube youtube;
 	private String name;
 
-	
+	private static Map<String, User> users;
+	private static DataStore<User> userDataStore;
 	public static User createUser(Credential credential) throws IOException{
 		User user = null;
 		YouTube youtube = new YouTube.Builder(Auth.HTTP_TRANSPORT,
@@ -80,6 +81,7 @@ public class User implements Serializable {
 	private User() {
 		createdAt = new Date();
 		subscriptions = new HashSet<>();
+		videos = new HashSet<>();
 	}
 
 	public Set<Channel> getSubscriptions() {
@@ -158,6 +160,11 @@ public class User implements Serializable {
 	}
 
 
+	public List<YTVideo> getSavedVideos(){
+		List<YTVideo> videoList = new ArrayList<>();
+		videoList.addAll(videos);
+		return videoList;
+	}
 
 	public List<YTVideo> getVideos(String sessionId) throws IOException {
 		getYoutube(sessionId);

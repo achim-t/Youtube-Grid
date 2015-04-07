@@ -3,7 +3,7 @@
  */
 $(function() {
 	toggleWatched = function() {
-		
+
 		if (this.checked) {
 
 			$(".muted").show();
@@ -47,37 +47,75 @@ $(function() {
 			}
 		});
 	}
-	
+
 	$("#cbWatched").on("change", toggleWatched);
 	$(".mark-watched").on("click", watched);
-	$('#btnMarkAll').on("click", function(){
+	$('#btnMarkAll').on("click", function() {
 		$('.video').addClass("muted");
 		if (!$("#cbWatched").is(":checked")) {
 
 			$('.video').hide();
 		}
 	});
-	
+
 	$.ajax({
-		url: './videoList'
+		url : './videoList'
+
+	}).done(function(responseJson) {
+		$.each(responseJson, createVideo);
+		console.log("trying to refresh Videos")
+		$.ajax({
+			url : './refreshVideos'
+		}).done(function(responseJson){
+			console.log("got response for refreshing videos")
+			$.each(responseJson, createVideo);
+			
+		});
 		
-	}).done(function(responseJson){
-		$.each(responseJson, function(index, data){
-		var $video = $('<div>',{class: 'video'});
-		$video.append($('<div>',{class: 'title'}).text(data.title));
-		var $imgcontainer = $('<div>',{class: 'img-container'}).appendTo($video);
-		var $a = $('<a>', {href: data.id}).appendTo($imgcontainer);
-		$('<img>',{src: data.thumbnailUrl}).appendTo($a);
-		$imgcontainer.append($('<span>', {'class': 'video-duration'}).text(data.duration));
-		var $mark = $('<div>',{class: 'mark-watched'}).appendTo($imgcontainer);
-		$a = $('<a>',{href: '#', title: 'mark as watched', 'onClick': 'watched'}).appendTo($mark);
-		$('<span>', {class: "glyphicon glyphicon-ok", 'aria-hidden': 'true'}).appendTo($a);
-		var $filter = $('<div>', {'class': 'filter'}).appendTo($imgcontainer);
-		$a = $('<a>',{href: '#', title: 'Filter Videos like this'}).appendTo($filter);
-		$('<span>', {class: "glyphicon glyphicon-filter", 'aria-hidden': 'true'}).appendTo($a);
-		
-		
-		
+	});
+	var createVideo = function(index, data) {
+		var $video = $('<div>', {
+			class : 'video'
+		});
+		$video.append($('<div>', {
+			class : 'title'
+		}).text(data.title));
+		var $imgcontainer = $('<div>', {
+			class : 'img-container'
+		}).appendTo($video);
+		var $a = $('<a>', {
+			href : data.id
+		}).appendTo($imgcontainer);
+		$('<img>', {
+			src : data.thumbnailUrl
+		}).appendTo($a);
+		$imgcontainer.append($('<span>', {
+			'class' : 'video-duration'
+		}).text(data.duration));
+		var $mark = $('<div>', {
+			class : 'mark-watched'
+		}).appendTo($imgcontainer);
+		$a = $('<a>', {
+			href : '#',
+			title : 'mark as watched',
+			'onClick' : 'watched'
+		}).appendTo($mark);
+		$('<span>', {
+			class : "glyphicon glyphicon-ok",
+			'aria-hidden' : 'true'
+		}).appendTo($a);
+		var $filter = $('<div>', {
+			'class' : 'filter'
+		}).appendTo($imgcontainer);
+		$a = $('<a>', {
+			href : '#',
+			title : 'Filter Videos like this'
+		}).appendTo($filter);
+		$('<span>', {
+			class : "glyphicon glyphicon-filter",
+			'aria-hidden' : 'true'
+		}).appendTo($a);
+
 		$video.appendTo($('.container-fluid'));
-			});});
+	}
 });

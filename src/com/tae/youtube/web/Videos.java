@@ -15,7 +15,7 @@ import com.tae.youtube.User;
 import com.tae.youtube.YTVideo;
 
 
-@WebServlet("/videoList")
+@WebServlet(urlPatterns = {"/videoList", "/refreshVideos"})
 public class Videos extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
@@ -26,11 +26,14 @@ public class Videos extends HttpServlet {
 		User user = User.getByYouTubeId(youtubeId);
 		
 
-		String sessionId = session.getId();
-		
 
-		List<YTVideo> videos = user.getVideos(sessionId);
 		
+		
+		List<YTVideo> videos = user.getSavedVideos();
+		if (request.getRequestURI().endsWith("refreshVideos")){
+			String sessionId = session.getId();
+			videos = user.getVideos(sessionId);
+		}
 		String json = new Gson().toJson(videos);
 		response.setContentType("application/json");
 	    response.setCharacterEncoding("UTF-8");
