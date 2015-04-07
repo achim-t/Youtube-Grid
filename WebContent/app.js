@@ -18,12 +18,13 @@ $(function() {
 		e.preventDefault();
 		var video = $(this).closest(".video");
 		video.addClass("muted");
-		$(this).on("click", unwatched);
+		$(this).off();
+		$(this).click(unwatched)
 		if (!$("#cbWatched").is(":checked")) {
 
 			video.hide();
 		}
-		$("a", this).attr("title", "Mark as Unwatched");
+		$(this).attr("title", "Mark as Unwatched");
 		$.ajax({
 			url : './video',
 			type : 'POST',
@@ -37,8 +38,9 @@ $(function() {
 	unwatched = function(e) {
 		e.preventDefault();
 		$(this).closest(".video").removeClass("muted");
-		$(this).on("click", watched);
-		$("a", this).attr("title", "Mark as Watched");
+		$(this).off();
+		$(this).click(watched);
+		$(this).attr("title", "Mark as Watched");
 		$.ajax({
 			url : './video',
 			type : 'POST',
@@ -50,7 +52,7 @@ $(function() {
 	}
 
 	$("#cbWatched").on("change", toggleWatched);
-	$(".mark-watched").on("click", watched);
+	//$(".mark-watched").on("click", watched);
 	$('#btnMarkAll').on("click", function() {
 		$('.video').addClass("muted");
 		if (!$("#cbWatched").is(":checked")) {
@@ -94,17 +96,17 @@ $(function() {
 			'class' : 'video-duration'
 		}).text(data.duration));
 		var $mark = $('<div>', {
-			class : 'mark-watched'
-		}).appendTo($imgcontainer);
-		$a = $('<a>', {
-			href : '#',
-			title : 'mark as watched',
-			'onClick' : 'watched'
-		}).appendTo($mark);
+			class : 'mark-watched',
+			title : 'mark as watched'
+		}).click(watched).appendTo($imgcontainer);
+//		$a = $('<span>', {
+//			title : 'mark as watched'
+//		}).click(watched)
+//		.appendTo($mark);
 		$('<span>', {
 			class : "glyphicon glyphicon-ok",
 			'aria-hidden' : 'true'
-		}).appendTo($a);
+		}).appendTo($mark);
 		var $filter = $('<div>', {
 			'class' : 'filter'
 		}).appendTo($imgcontainer);
