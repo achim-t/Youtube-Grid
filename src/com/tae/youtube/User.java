@@ -30,7 +30,7 @@ import com.google.api.services.youtube.model.VideoListResponse;
 @SuppressWarnings("serial")
 public class User implements Serializable {
 
-	private Set<YTVideo> videos;
+	private Map<String, YTVideo> videos;
 	private Set<Channel> subscriptions;
 	private String id;
 	private Date createdAt;
@@ -86,7 +86,7 @@ public class User implements Serializable {
 	private User() {
 		createdAt = new Date();
 		subscriptions = new HashSet<>();
-		videos = new HashSet<>();
+		videos = new HashMap<>();
 	}
 
 	public Set<Channel> getSubscriptions() {
@@ -166,7 +166,7 @@ public class User implements Serializable {
 
 	public List<YTVideo> getSavedVideos() {
 		List<YTVideo> videoList = new ArrayList<>();
-		videoList.addAll(videos);
+		videoList.addAll(videos.values());
 		return videoList;
 	}
 
@@ -188,12 +188,11 @@ public class User implements Serializable {
 				sessionId);
 		List<YTVideo> result = new ArrayList<>();
 		for (YTVideo video : list) {
-			if (!videos.contains(video)) {
-				result.add(video);
-
-			}
+			if (!videos.containsKey(video.getId())) {
+				result.add(video);videos.put(video.getId(), video);
+			} 
+				
 		}
-		videos.addAll(result);
 
 		return result;
 	}
@@ -270,8 +269,13 @@ public class User implements Serializable {
 		if (sessionIdToYoutubeIdMapping.containsKey(sessionId)) {
 			String youtubeId = sessionIdToYoutubeIdMapping.get(sessionId);
 			return getByYouTubeId(youtubeId);
-		} else
+		} else {
 			return null;
+		}
+	}
+
+	public YTVideo getVideo(String videoId) {
+		return videos.get(videoId);
 	}
 
 }

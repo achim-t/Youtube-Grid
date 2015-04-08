@@ -30,14 +30,15 @@ $(function() {
 			type : 'POST',
 			data : {
 				'action' : 'mark',
-				'id' : '1234'
+				'id' : video[0].id
 			}
 		});
 
 	};
 	unwatched = function(e) {
 		e.preventDefault();
-		$(this).closest(".video").removeClass("muted");
+		var video = $(this).closest(".video");
+		video.removeClass("muted");
 		$(this).off();
 		$(this).click(watched);
 		$(this).attr("title", "Mark as Watched");
@@ -46,7 +47,7 @@ $(function() {
 			type : 'POST',
 			data : {
 				'action' : 'unmark',
-				'id' : '1234'
+				'id' : video[0].id
 			}
 		});
 	}
@@ -77,8 +78,10 @@ $(function() {
 	});
 	var createVideo = function(index, data) {
 		var $video = $('<div>', {
-			class : 'video'
+			class : 'video',
+			id : data.id
 		});
+		
 		$video.append($('<div>', {
 			class : 'title'
 		}).text(data.title));
@@ -94,10 +97,20 @@ $(function() {
 		$imgcontainer.append($('<span>', {
 			'class' : 'video-duration'
 		}).text(data.duration));
-		var $mark = $('<div>', {
-			class : 'mark-watched',
-			title : 'mark as watched'
-		}).click(watched).appendTo($imgcontainer);
+		if (data.watched){
+			var $mark = $('<div>', {
+				class : 'mark-watched',
+				title : 'mark as unwatched'
+			}).click(unwatched);
+		}
+		else {
+			var $mark = $('<div>', {
+				class : 'mark-watched',
+				title : 'mark as watched'
+			}).click(watched);
+		}
+			
+		$mark.appendTo($imgcontainer);
 		$('<span>', {
 			class : "glyphicon glyphicon-ok",
 			'aria-hidden' : 'true'
@@ -112,5 +125,12 @@ $(function() {
 		}).appendTo($filter);
 
 		$video.appendTo($('.container-fluid'));
+		if (data.watched){
+			$video.addClass("muted");
+			if (!$("#cbWatched").is(":checked")) {
+
+				$video.hide();
+			}
+		}
 	}
 });

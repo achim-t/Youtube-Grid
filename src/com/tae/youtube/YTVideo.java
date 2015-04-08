@@ -16,6 +16,16 @@ public class YTVideo implements Comparable<YTVideo>, Serializable {
 	private String thumbnailUrl;
 	private String duration;
 	private DateTime publishedAt;
+	private boolean watched = false;
+	
+
+	public boolean isWatched() {
+		return watched;
+	}
+
+	public void setWatched(boolean watched) {
+		this.watched = watched;
+	}
 
 	private static HashMap<String, String> regexMap = null;
 	private static String regex2two = "(?<=[^\\d])(\\d)(?=[^\\d])";
