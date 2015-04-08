@@ -48,19 +48,16 @@ $(function() {
 		}
 
 	};
-
-	watched = function(e) {
-		console.log("mark as watched");
-		e.preventDefault();
-		var video = $(this).closest(".video");
+	var markWatched = function (video){
 		video.addClass("muted");
-		$(this).off();
-		$(this).click(unwatched)
+		mark = $(".mark-watched", video);
+		mark.off();
+		mark.click(unwatched)
 		if (!$("#cbWatched").is(":checked")) {
 
 			video.hide();
 		}
-		$(this).attr("title", "Mark as Unwatched");
+		mark.attr("title", "Mark as Unwatched");
 		$.ajax({
 			url : './video',
 			type : 'POST',
@@ -69,12 +66,18 @@ $(function() {
 				'id' : video[0].id
 			}
 		});
-
 	};
-	unwatched = function(e) {
+	var watched = function(e) {
 		e.preventDefault();
+		console.log("mark as watched");
 		var video = $(this).closest(".video");
-		video.removeClass("muted");
+		
+		markWatched(video);
+	};
+	var unwatched = function(e) {
+		e.preventDefault();
+		var $video = $(this).closest(".video");
+		$video.removeClass("muted");
 		$(this).off();
 		$(this).click(watched);
 		$(this).attr("title", "Mark as Watched");
@@ -83,7 +86,7 @@ $(function() {
 			type : 'POST',
 			data : {
 				'action' : 'unmark',
-				'id' : video[0].id
+				'id' : $video[0].id
 			}
 		});
 	}
@@ -113,6 +116,7 @@ $(function() {
 		});
 		
 	});
+
 	var createVideo = function(index, data) {
 		var $video = $('<div>', {
 			class : 'video',
@@ -126,8 +130,13 @@ $(function() {
 			class : 'img-container'
 		}).appendTo($video);
 		var $a = $('<a>', {
-			href : data.id
-		}).appendTo($imgcontainer);
+			href : "https://www.youtube.com/watch?v="+data.id
+		}).click(function(){
+			markWatched($video);
+			window.open($a.attr('href'));
+			return false;
+		});
+		$a.appendTo($imgcontainer);
 		$('<img>', {
 			src : data.thumbnailUrl
 		}).appendTo($a);
