@@ -7,7 +7,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.tae.youtube.Auth;
@@ -20,9 +19,7 @@ public class Login extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		HttpSession session = req.getSession();
-		String sessionId = session.getId();
-		// String youtubeId = (String) session.getAttribute("youtube_id");
+		String sessionId = req.getSession().getId();
 
 		User user = User.getBySessionId(sessionId);
 		if (user == null) {

@@ -18,17 +18,11 @@ public class Index extends HttpServlet {
 			HttpServletResponse response) throws ServletException, IOException {
 
 		String sessionId = request.getSession().getId();
-//		String youtubeId = (String) session.getAttribute("youtube_id");
-//		User user = User.getByYouTubeId(youtubeId);
 		User user = User.getBySessionId(sessionId);
-//		if (youtubeId == null || user == null) {
 		if(user==null){
 			request.getRequestDispatcher("/login").forward(request, response);
 			return;
 		}
-
 		request.getRequestDispatcher("videoView").forward(request, response);
-
 	}
-
 }

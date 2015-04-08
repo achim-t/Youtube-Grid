@@ -22,17 +22,10 @@ public class Videos extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String sessionId = request.getSession().getId();
-//		String youtubeId = (String) session.getAttribute("youtube_id");
-//		User user = User.getByYouTubeId(youtubeId);
 		User user = User.getBySessionId(sessionId);
-		
-
-
-		
 		
 		List<YTVideo> videos = user.getSavedVideos();
 		if (request.getRequestURI().endsWith("refreshVideos")){
-//			String sessionId = session.getId();
 			videos = user.getVideos(sessionId);
 		}
 		
@@ -41,8 +34,5 @@ public class Videos extends HttpServlet {
 		response.setContentType("application/json");
 	    response.setCharacterEncoding("UTF-8");
 	    response.getWriter().write(json);
-		
 	}
-
-
 }
