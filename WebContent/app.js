@@ -25,6 +25,29 @@ $(function() {
 		}
 
 	};
+	toggleFiltered = function() {
+
+		if (this.checked) {
+			$.ajax({
+				url: './user',
+				type: 'POST',
+				data:{
+					'setting': 'showFiltered'
+				}
+			});
+//			$(".muted").show();
+		} else {
+			$.ajax({
+				url: './user',
+				type: 'POST',
+				data:{
+					'setting': 'hideFiltered'
+				}
+			});
+//			$(".muted").hide();
+		}
+
+	};
 
 	watched = function(e) {
 		console.log("mark as watched");
@@ -66,6 +89,7 @@ $(function() {
 	}
 
 	$("#cbWatched").on("change", toggleWatched);
+	$("#cbFiltered").on("change", toggleFiltered);
 	$('#btnMarkAll').on("click", function() {
 		$('.video').addClass("muted");
 		if (!$("#cbWatched").is(":checked")) {

@@ -11,8 +11,8 @@
 			</a>
 		</div>
 		<div class="btn-group" data-toggle="buttons">
-			<label class="btn btn-default "> <input type="checkbox"
-				autocomplete="off" checked><span class="glyphicon glyphicon-filter"
+			<label class="btn btn-default ${settings.filtered?"active":""}"> <input type="checkbox" id="cbFiltered"
+				autocomplete="off" ${settings.filtered?"checked":""}><span class="glyphicon glyphicon-filter"
 				aria-hidden="true"></span> <span>Show Filtered</span>
 			</label> <label class="btn btn-default ${settings.watched?"active":""}"> 
 			<input type="checkbox"  id="cbWatched" ${settings.watched?"checked":""}/><span
