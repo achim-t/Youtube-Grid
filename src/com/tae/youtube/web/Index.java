@@ -25,6 +25,7 @@ public class Index extends HttpServlet {
 		}
 		
 		request.setAttribute("settings", user.getSettings());
+		request.setAttribute("userName", user.getName());
 		request.getRequestDispatcher("videoView").forward(request, response);
 	}
 }

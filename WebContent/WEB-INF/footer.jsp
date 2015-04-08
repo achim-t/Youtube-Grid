@@ -3,7 +3,7 @@
 		<div class="btn-group pull-right">
 			<button class="btn btn-info" disabled="disabled">
 				<span class="glyphicon glyphicon-user" aria-hidden="true"></span>
-				<span>UserName</span>
+				<span>${userName}</span>
 			</button>
 			<a href="signout" class="btn btn-default"> <span
 				class="glyphicon glyphicon-log-out" title="Sign out"
