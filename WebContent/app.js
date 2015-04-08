@@ -5,9 +5,22 @@ $(function() {
 	toggleWatched = function() {
 
 		if (this.checked) {
-
+			$.ajax({
+				url: './user',
+				type: 'POST',
+				data:{
+					'setting': 'showWatched'
+				}
+			});
 			$(".muted").show();
 		} else {
+			$.ajax({
+				url: './user',
+				type: 'POST',
+				data:{
+					'setting': 'hideWatched'
+				}
+			});
 			$(".muted").hide();
 		}
 
