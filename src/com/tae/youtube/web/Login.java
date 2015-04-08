@@ -21,11 +21,12 @@ public class Login extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		HttpSession session = req.getSession();
-		String youtubeId = (String) session.getAttribute("youtube_id");
+		String sessionId = session.getId();
+		// String youtubeId = (String) session.getAttribute("youtube_id");
 
-		if (youtubeId == null) {
-			String userId = session.getId();
-			Credential credential = Auth.getCredential(userId);
+		User user = User.getBySessionId(sessionId);
+		if (user == null) {
+			Credential credential = Auth.getCredential(sessionId);
 			if (credential == null) {
 				String url = Auth.getAuthorizationUrl();
 				resp.sendRedirect(url);
@@ -33,9 +34,8 @@ public class Login extends HttpServlet {
 			}
 
 			else {
-				User user = User.createUser(credential);
+				user = User.createUser(credential, sessionId);
 
-				session.setAttribute("youtube_id", user.getId());
 				System.out.println("user was created at: "
 						+ user.getCreatedAt());
 			}

@@ -9,7 +9,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import com.google.gson.Gson;
 import com.tae.youtube.User;
@@ -22,9 +21,10 @@ public class Videos extends HttpServlet {
        
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		HttpSession session = request.getSession();
-		String youtubeId = (String) session.getAttribute("youtube_id");
-		User user = User.getByYouTubeId(youtubeId);
+		String sessionId = request.getSession().getId();
+//		String youtubeId = (String) session.getAttribute("youtube_id");
+//		User user = User.getByYouTubeId(youtubeId);
+		User user = User.getBySessionId(sessionId);
 		
 
 
@@ -32,7 +32,7 @@ public class Videos extends HttpServlet {
 		
 		List<YTVideo> videos = user.getSavedVideos();
 		if (request.getRequestURI().endsWith("refreshVideos")){
-			String sessionId = session.getId();
+//			String sessionId = session.getId();
 			videos = user.getVideos(sessionId);
 		}
 		

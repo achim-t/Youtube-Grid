@@ -39,8 +39,10 @@ public class User implements Serializable {
 
 	private static Map<String, User> users;
 	private static DataStore<User> userDataStore;
+	private static Map<String, String> sessionIdToYoutubeIdMapping = new HashMap<>();
 
-	public static User createUser(Credential credential) throws IOException {
+	public static User createUser(Credential credential, String sessionId)
+			throws IOException {
 		User user = null;
 		YouTube youtube = new YouTube.Builder(Auth.HTTP_TRANSPORT,
 				Auth.JSON_FACTORY, credential).build();
@@ -51,11 +53,14 @@ public class User implements Serializable {
 		String youtubeId = channel.getId();
 		String name = channel.getSnippet().getTitle();
 		if (youtubeId != null) {
-			user = new User();
-			user.setId(youtubeId);
-			user.setName(name);
-			User.users.put(youtubeId, user);
-
+			user = getByYouTubeId(youtubeId);
+			if (user == null) {
+				user = new User();
+				user.setId(youtubeId);
+				user.setName(name);
+				User.users.put(youtubeId, user);
+			}
+			sessionIdToYoutubeIdMapping.put(sessionId, youtubeId);
 		}
 		return user;
 	}
@@ -129,7 +134,7 @@ public class User implements Serializable {
 		users = new HashMap<>();
 	}
 
-	public static User getByYouTubeId(String id) {
+	private static User getByYouTubeId(String id) {
 		if (users.containsKey(id))
 			return users.get(id);
 
@@ -203,14 +208,14 @@ public class User implements Serializable {
 			com.google.api.services.youtube.YouTube.Search.List searchList = youtube
 					.search().list("id").setChannelId(channel.getChannelId())
 					.setOrder("date").setType("video").setMaxResults(50L);
-//			DateTime publishedAt;
-//			try {
-//				YTVideo newestVideo = channel.getNewestVideo();
-//				publishedAt = newestVideo.getPublishedAt();
-//				searchList.setPublishedAfter(publishedAt);
-//			} catch (NoSuchElementException e) {
-//
-//			}
+			// DateTime publishedAt;
+			// try {
+			// YTVideo newestVideo = channel.getNewestVideo();
+			// publishedAt = newestVideo.getPublishedAt();
+			// searchList.setPublishedAfter(publishedAt);
+			// } catch (NoSuchElementException e) {
+			//
+			// }
 			SearchListResponse listResponse = searchList.execute();
 			for (SearchResult item : listResponse.getItems()) {
 				String id = item.getId().getVideoId();
@@ -259,6 +264,14 @@ public class User implements Serializable {
 		} while (nextPageToken.length() > 0); // TODO
 
 		return channelList;
+	}
+
+	public static User getBySessionId(String sessionId) {
+		if (sessionIdToYoutubeIdMapping.containsKey(sessionId)) {
+			String youtubeId = sessionIdToYoutubeIdMapping.get(sessionId);
+			return getByYouTubeId(youtubeId);
+		} else
+			return null;
 	}
 
 }

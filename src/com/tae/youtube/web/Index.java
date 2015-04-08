@@ -7,7 +7,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import com.tae.youtube.User;
 
@@ -18,10 +17,12 @@ public class Index extends HttpServlet {
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 
-		HttpSession session = request.getSession();
-		String youtubeId = (String) session.getAttribute("youtube_id");
-		User user = User.getByYouTubeId(youtubeId);
-		if (youtubeId == null || user == null) {
+		String sessionId = request.getSession().getId();
+//		String youtubeId = (String) session.getAttribute("youtube_id");
+//		User user = User.getByYouTubeId(youtubeId);
+		User user = User.getBySessionId(sessionId);
+//		if (youtubeId == null || user == null) {
+		if(user==null){
 			request.getRequestDispatcher("/login").forward(request, response);
 			return;
 		}
