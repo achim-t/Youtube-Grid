@@ -12,9 +12,10 @@
 		</div>
 		<div class="btn-group" data-toggle="buttons">
 			<label class="btn btn-default "> <input type="checkbox"
-				autocomplete="off"><span class="glyphicon glyphicon-filter"
+				autocomplete="off" checked><span class="glyphicon glyphicon-filter"
 				aria-hidden="true"></span> <span>Show Filtered</span>
-			</label> <label class="btn btn-default"> <input type="checkbox"  id="cbWatched" /><span
+			</label> <label class="btn btn-default ${settings.watched?"active":""}"> 
+			<input type="checkbox"  id="cbWatched" ${settings.watched?"checked":""}/><span
 				class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> <span>Show Watched</span>
 			</label>
 

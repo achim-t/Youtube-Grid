@@ -36,6 +36,7 @@ public class User implements Serializable {
 	private Date createdAt;
 	private transient YouTube youtube;
 	private String name;
+	private Settings settings;
 
 	private static Map<String, User> users;
 	private static DataStore<User> userDataStore;
@@ -87,6 +88,7 @@ public class User implements Serializable {
 		createdAt = new Date();
 		subscriptions = new HashSet<>();
 		videos = new HashMap<>();
+		settings = new Settings();
 	}
 
 	public Set<Channel> getSubscriptions() {
@@ -276,6 +278,10 @@ public class User implements Serializable {
 
 	public YTVideo getVideo(String videoId) {
 		return videos.get(videoId);
+	}
+
+	public Settings getSettings() {
+		return settings;
 	}
 
 }

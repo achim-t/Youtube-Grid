@@ -23,6 +23,8 @@ public class Index extends HttpServlet {
 			request.getRequestDispatcher("/login").forward(request, response);
 			return;
 		}
+		
+		request.setAttribute("settings", user.getSettings());
 		request.getRequestDispatcher("videoView").forward(request, response);
 	}
 }

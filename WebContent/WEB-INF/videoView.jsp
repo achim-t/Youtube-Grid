@@ -17,7 +17,7 @@
 	<div class="container-fluid">
 
 	</div>
-	<%@include file="footer.html"%>
+	<%@include file="footer.jsp"%>
 
 	
 	<script src="https://code.jquery.com/jquery-git2.min.js"></script>
