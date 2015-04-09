@@ -1,7 +1,11 @@
 package com.tae.youtube;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -133,7 +137,21 @@ public class User implements Serializable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		try {
+			FileInputStream fileIn = new FileInputStream(
+					System.getProperty("user.home") + "/" + "local_data"+ "/"
+							+ "user.map");
+			ObjectInputStream in = new ObjectInputStream(fileIn);
+
+			sessionIdToYoutubeIdMapping = (Map<String, String>) in.readObject();
+
+			in.close();
+			fileIn.close();
+		} catch (Exception i) {
+			sessionIdToYoutubeIdMapping = new HashMap<>();
+		}
 		users = new HashMap<>();
+		
 	}
 
 	private static User getByYouTubeId(String id) {
@@ -164,6 +182,21 @@ public class User implements Serializable {
 				e.printStackTrace();
 			}
 		}
+		
+		try
+	      {
+	         FileOutputStream fileOut =
+	         new FileOutputStream(System.getProperty("user.home") + "/" + "local_data" + "/"
+						+ "user.map");
+	         ObjectOutputStream out = new ObjectOutputStream(fileOut);
+	         out.writeObject(sessionIdToYoutubeIdMapping);
+	         out.close();
+	         fileOut.close();
+	         
+	      }catch(IOException i)
+	      {
+	          i.printStackTrace();
+	      }
 	}
 
 	public List<YTVideo> getSavedVideos() {
@@ -191,9 +224,10 @@ public class User implements Serializable {
 		List<YTVideo> result = new ArrayList<>();
 		for (YTVideo video : list) {
 			if (!videos.containsKey(video.getId())) {
-				result.add(video);videos.put(video.getId(), video);
-			} 
-				
+				result.add(video);
+				videos.put(video.getId(), video);
+			}
+
 		}
 
 		return result;
