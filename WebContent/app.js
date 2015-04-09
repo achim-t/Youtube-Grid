@@ -12,7 +12,7 @@ $(function() {
 					'setting': 'showWatched'
 				}
 			});
-			$(".muted").show();
+			$(".muted").closest('.video').show();
 		} else {
 			$.ajax({
 				url: './user',
@@ -21,7 +21,7 @@ $(function() {
 					'setting': 'hideWatched'
 				}
 			});
-			$(".muted").hide();
+			$(".muted").closest('.video').hide();
 		}
 
 	};
@@ -49,7 +49,9 @@ $(function() {
 
 	};
 	var markWatched = function (video){
-		video.addClass("muted");
+		var $imgcontainer = $(".img-container", video);
+		$imgcontainer.addClass("muted");
+		$imgcontainer.append($('<div class="watched-badge">WATCHED</div>'));
 		mark = $(".mark-watched", video);
 		mark.off();
 		mark.click(unwatched)
@@ -77,7 +79,9 @@ $(function() {
 	var unwatched = function(e) {
 		e.preventDefault();
 		var $video = $(this).closest(".video");
-		$video.removeClass("muted");
+		var $imgcontainer = $(this).closest(".img-container");
+		$imgcontainer.removeClass("muted");
+		$('.watched-badge', $imgcontainer).remove();  
 		$(this).off();
 		$(this).click(watched);
 		$(this).attr("title", "Mark as Watched");
@@ -123,9 +127,7 @@ $(function() {
 			id : data.id
 		});
 		
-		$video.append($('<div>', {
-			class : 'title'
-		}).text(data.title));
+		
 		var $imgcontainer = $('<div>', {
 			class : 'img-container'
 		}).appendTo($video);
@@ -144,6 +146,9 @@ $(function() {
 			'class' : 'video-duration'
 		}).text(data.duration));
 		if (data.watched){
+			$imgcontainer.append($('<div>', {
+				class : 'watched-badge'
+			}).text("WATCHED"));
 			var $mark = $('<div>', {
 				class : 'mark-watched',
 				title : 'mark as unwatched'
@@ -169,10 +174,17 @@ $(function() {
 			class : "glyphicon glyphicon-filter",
 			'aria-hidden' : 'true'
 		}).appendTo($filter);
-
+		$video.append($('<div>', {
+			class : 'title'
+		}).text(data.title));
+		$video.append($('<div>',{
+			class : 'byline'
+		}).text("by ")).append($('<span>',{
+			class: 'channel'
+		}).text(data.channelId));
 		$video.appendTo($('.container-fluid'));
 		if (data.watched){
-			$video.addClass("muted");
+			$imgcontainer.addClass("muted");
 			if (!$("#cbWatched").is(":checked")) {
 
 				$video.hide();
