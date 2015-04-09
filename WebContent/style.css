@@ -30,25 +30,56 @@ position: absolute;
 .filter {
 	position: absolute;
 	display: none;
-	background: #111;
-    color: #eee;
-	bottom: 10px;
-	left: 10px;
+	color: #333;
+	background: #f8f8f8;
+	bottom: 5px;
+	left: 5px;
 	cursor: pointer;
+    padding: 2px;
+        border-style: solid;
+    border-width: 1px;
+    border-radius: 2px;
+    border-color: #333;
+}
+
+
+.watched-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    padding: 2px 4px;
+    line-height: 1.3em;
+    text-align: left;
+    opacity: 0.5;
+    color: #fff;
+    font-size: 11px;
+    font-weight: bold;
+    background-color: #000;
+    cursor: pointer;
 }
 
 .mark-watched {
 	position: absolute;
 	display: none;
-	color: #eee;
-	background: #111;
-	bottom: 10px;
-	right: 10px;
+	color: #333;
+	background: #f8f8f8;
+	bottom: 5px;
+	right: 5px;
 	cursor: pointer;
+    padding: 2px;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 2px;
+    border-color: #333;
+    
 }
 
 .muted {
-	opacity: 0.3;
+	opacity: 0.7;
+}
+
+.byline{
+    color: #767676;
 }
 
 .video {
@@ -76,20 +107,35 @@ position: absolute;
 }
 
 .title {
+    opacity: .;
 	position: relative;
-	float: left;
-	padding-top: 6px;
-	font-size: 90%;
-	height: 3.5em;
-	text-decoration: none;
-	color: red;
-/* 	color: #333; */
-	overflow: hidden;
-/* 	text-align: center; */
-	font-weight: 600;
-/* 	width: 90%; */
-	margin-left: 5%;
-
+	background-color: white;
+	color: #167ac6;
+    line-height: 1.3em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal;
+    word-wrap: break-word;
+    text-decoration: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font-weight: bold;
+    font-family: arial, sans-serif;
+    content: initial;
+    right: 0;
+    -webkit-line-clamp:2;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    
+    float: left;
+	;
+	
+	
+	
+	
+	
 }
 
 .title:hover {
