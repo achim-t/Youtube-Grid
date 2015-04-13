@@ -34,7 +34,6 @@ public class User implements Serializable {
 
 	private Map<String, YTVideo> videos;
 	private Map<String, Channel> subscriptions;
-//	private Set<Channel> subscriptions;
 	private String id;
 	private Date createdAt;
 	private transient YouTube youtube;
@@ -134,7 +133,7 @@ public class User implements Serializable {
 		}
 		try {
 			FileInputStream fileIn = new FileInputStream(
-					System.getProperty("user.home") + "/" + "local_data"+ "/"
+					System.getProperty("user.home") + "/" + "local_data" + "/"
 							+ "user.map");
 			ObjectInputStream in = new ObjectInputStream(fileIn);
 
@@ -146,7 +145,7 @@ public class User implements Serializable {
 			sessionIdToYoutubeIdMapping = new HashMap<>();
 		}
 		users = new HashMap<>();
-		
+
 	}
 
 	private static User getByYouTubeId(String id) {
@@ -177,21 +176,19 @@ public class User implements Serializable {
 				e.printStackTrace();
 			}
 		}
-		
-		try
-	      {
-	         FileOutputStream fileOut =
-	         new FileOutputStream(System.getProperty("user.home") + "/" + "local_data" + "/"
-						+ "user.map");
-	         ObjectOutputStream out = new ObjectOutputStream(fileOut);
-	         out.writeObject(sessionIdToYoutubeIdMapping);
-	         out.close();
-	         fileOut.close();
-	         
-	      }catch(IOException i)
-	      {
-	          i.printStackTrace();
-	      }
+
+		try {
+			FileOutputStream fileOut = new FileOutputStream(
+					System.getProperty("user.home") + "/" + "local_data" + "/"
+							+ "user.map");
+			ObjectOutputStream out = new ObjectOutputStream(fileOut);
+			out.writeObject(sessionIdToYoutubeIdMapping);
+			out.close();
+			fileOut.close();
+
+		} catch (IOException i) {
+			i.printStackTrace();
+		}
 	}
 
 	public List<YTVideo> getSavedVideos() {
@@ -203,7 +200,7 @@ public class User implements Serializable {
 
 	public List<YTVideo> getVideos(String sessionId) throws IOException {
 		getYoutube(sessionId);
-		
+
 		updateSubscriptions(sessionId);
 
 		List<Channel> activeSubscriptions = getActiveSubscriptions();
@@ -222,11 +219,12 @@ public class User implements Serializable {
 		return result;
 	}
 
-	private void doFilterVideos(Collection<YTVideo>videos){
-		for (Channel channel : subscriptions.values()){
+	private void doFilterVideos(Collection<YTVideo> videos) {
+		for (Channel channel : subscriptions.values()) {
 			channel.doFilter(videos);
 		}
 	}
+
 	private void updateSubscriptions(String sessionId) throws IOException {
 		List<Channel> currentSubscriptions = getSubscriptionsFromYouTube(sessionId);
 
@@ -235,9 +233,11 @@ public class User implements Serializable {
 				subscription.setActive(false);
 		}
 
-		for (Channel subscription: currentSubscriptions){
-			subscriptions.put(subscription.getChannelId(), subscription);
-			
+		for (Channel subscription : currentSubscriptions) {
+			if (!subscriptions.containsKey(subscription.getChannelId())) {
+				subscriptions.put(subscription.getChannelId(), subscription);
+			}
+
 		}
 	}
 
@@ -327,7 +327,6 @@ public class User implements Serializable {
 	}
 
 	public Channel getChannel(String channelId) {
-		// TODO Auto-generated method stub
 		return subscriptions.get(channelId);
 	}
 
