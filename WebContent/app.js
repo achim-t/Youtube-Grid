@@ -2,6 +2,8 @@
  * 
  */
 $(function() {
+	var template = Handlebars.compile($('#template').html());
+	
 	toggleWatched = function() {
 
 		if (this.checked) {
@@ -115,18 +117,24 @@ $(function() {
 		url : './videoList'
 
 	}).done(function(responseJson) {
-		$.each(responseJson, createVideo);
+		$.each(responseJson, createVideo2);
 		console.log("trying to refresh Videos")
 		$.ajax({
 			url : './refreshVideos'
 		}).done(function(responseJson) {
 			console.log("got response for refreshing videos")
-			$.each(responseJson, createVideo);
+			$.each(responseJson, createVideo2);
 
 		});
 
 	});
 
+	var createVideo2 = function(index, data){
+		var html = template(data);
+		var $video = $('<div>').html(html);
+		$video.appendTo($('.container-fluid'));
+	};
+	
 	var createVideo = function(index, data) {
 		var $video = $('<div>', {
 			'class' : 'video',
@@ -194,11 +202,16 @@ $(function() {
 		$video.append($('<div>', {
 			'class' : 'title'
 		}).text(data.title));
-		$video.append($('<div>', {
-			'class' : 'byline'
-		}).text("by ")).append($('<span>', {
-			'class' : 'channel'
-		}).text(data.channelName));
+		$video.append(
+				$('<div>', 
+						{ 'class':'byline' })
+						.text("by ")
+						.append(
+								$('<span>', {
+									'class': 'channel'})
+									.text(data.channelName)
+								)
+				);
 		$video.appendTo($('.container-fluid'));
 		if (data.watched) {
 			$imgcontainer.addClass("muted");

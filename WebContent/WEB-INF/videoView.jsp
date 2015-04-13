@@ -48,7 +48,25 @@
 
 	<%@include file="footer.jsp"%>
 
-
+<script id="template" type="x-tmpl-mustache">
+<div class="video" id="{{id}}">
+  	<div class="img-container">
+		<a href="https://www.youtube.com/watch?v={{id}}">
+			<img src="{{thumbnailUrl}}">
+		</a>
+		<span class="video-duration">{{duration}}</span>
+		<div class="mark-watched" title="mark as watched">
+			<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+		</div>
+		<div class="filter" data-toggle="modal" data-target="#filterModal" data-title="{{title}}" data-channel="{{channelId}}" data-id="{{id}}" title="Filter Videos like this">
+			<span class="glyphicon glyphicon-filter" aria-hidden="true"></span>
+		</div>
+	</div>
+	<div class="title">{{title}}</div>
+	<div class="byline">by <span class="channel">{{channelName}}</span></div>
+</div>
+</script>
+<script src="//cdn.jsdelivr.net/handlebarsjs/3.0.0/handlebars.js"></script>
 	<script src="https://code.jquery.com/jquery-git2.min.js"></script>
 	<script
 		src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
