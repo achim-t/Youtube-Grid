@@ -270,6 +270,7 @@ public class User implements Serializable {
 
 			for (Video v : videoListResponse.getItems()) {
 				YTVideo video = new YTVideo(v);
+				video.setChannelName(channel.getTitle());
 				videoList.add(video);
 			}
 		}

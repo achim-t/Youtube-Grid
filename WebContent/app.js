@@ -198,7 +198,7 @@ $(function() {
 			'class' : 'byline'
 		}).text("by ")).append($('<span>', {
 			'class' : 'channel'
-		}).text(data.channelId));
+		}).text(data.channelName));
 		$video.appendTo($('.container-fluid'));
 		if (data.watched) {
 			$imgcontainer.addClass("muted");

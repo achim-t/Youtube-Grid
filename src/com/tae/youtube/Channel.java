@@ -21,6 +21,7 @@ public class Channel implements Serializable{
 		title = snippet.getChannelTitle();
 		thumbnailUrl = snippet.getThumbnails().getDefault().getUrl();
 		channelId = snippet.getResourceId().getChannelId();
+		title = snippet.getTitle();
 		filters = new ArrayList<>();
 	}
 	

@@ -10,34 +10,8 @@ import com.google.api.services.youtube.model.VideoSnippet;
 
 @SuppressWarnings("serial")
 public class YTVideo implements Comparable<YTVideo>, Serializable {
-	private String id;
-	private String channelId;
-	private String title;
-	private String thumbnailUrl;
-	private String duration;
-	private DateTime publishedAt;
-	private boolean watched = false;
-	private boolean filtered = false;
-	
-
-	public boolean isFiltered() {
-		return filtered;
-	}
-
-	public void setFiltered(boolean filtered) {
-		this.filtered = filtered;
-	}
-
-	public boolean isWatched() {
-		return watched;
-	}
-
-	public void setWatched(boolean watched) {
-		this.watched = watched;
-	}
-
-	private static HashMap<String, String> regexMap = null;
 	private static String regex2two = "(?<=[^\\d])(\\d)(?=[^\\d])";
+	private static HashMap<String, String> regexMap = null;
 	private static String two = "0$1";
 
 	private static String convertDuration(String duration) {
@@ -51,39 +25,45 @@ public class YTVideo implements Comparable<YTVideo>, Serializable {
 			regexMap.put("PT(\\d\\d)H(\\d\\d)M", "$1:$2:00");
 			regexMap.put("PT(\\d\\d)H(\\d\\d)M(\\d\\d)S", "$1:$2:$3");
 		}
-		
+
 		String d = duration.replaceAll(regex2two, two);
-        String regex = getRegex(d);
-        if (regex == null) {
-            System.out.println(d + ": invalid");
-            return duration;
-//            throw new Exception();
-        }
-        String newDuration = d.replaceAll(regex, regexMap.get(regex));
+		String regex = getRegex(d);
+		if (regex == null) {
+			System.out.println(d + ": invalid");
+			return duration;
+			// throw new Exception();
+		}
+		String newDuration = d.replaceAll(regex, regexMap.get(regex));
 		return newDuration;
 	}
 
-	@Override
-	public int hashCode() {
-		
-		return id.hashCode();
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (!(obj instanceof YTVideo))
-			return false;
-		YTVideo other = (YTVideo) obj;
-		return id.equals(other.getId());
-	}
-
 	private static String getRegex(String date) {
-	    for (String r : regexMap.keySet())
-	        if (Pattern.matches(r, date))
-	            return r;
-	    return null;
+		for (String r : regexMap.keySet())
+			if (Pattern.matches(r, date))
+				return r;
+		return null;
 	}
-	
+
+	private String channelId;
+	private String channelName;
+	public String getChannelName() {
+		return channelName;
+	}
+
+	public void setChannelName(String channelName) {
+		this.channelName = channelName;
+	}
+
+	private String duration;
+	private boolean filtered = false;
+
+	private String id;
+	private DateTime publishedAt;
+	private String thumbnailUrl;
+	private String title;
+
+	private boolean watched = false;
+
 	public YTVideo(Video video) {
 		id = video.getId();
 		VideoSnippet snippet = video.getSnippet();
@@ -94,36 +74,66 @@ public class YTVideo implements Comparable<YTVideo>, Serializable {
 		duration = convertDuration(video.getContentDetails().getDuration());
 	}
 
-	public String getId() {
-		return id;
-	}
-
-	public String getChannelId() {
-		return channelId;
-	}
-
-	public String getTitle() {
-		return title;
-	}
-
-	public String getThumbnailUrl() {
-		return thumbnailUrl;
-	}
-
-	public String getDuration() {
-		return duration;
-	}
-
-	public DateTime getPublishedAt() {
-		return publishedAt;
-	}
-
 	@Override
 	public int compareTo(YTVideo other) {
 		return -1
 				* Long.compare(publishedAt.getValue(), other.getPublishedAt()
 						.getValue());
 
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof YTVideo))
+			return false;
+		YTVideo other = (YTVideo) obj;
+		return id.equals(other.getId());
+	}
+
+	public String getChannelId() {
+		return channelId;
+	}
+
+	public String getDuration() {
+		return duration;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public DateTime getPublishedAt() {
+		return publishedAt;
+	}
+
+	public String getThumbnailUrl() {
+		return thumbnailUrl;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	@Override
+	public int hashCode() {
+
+		return id.hashCode();
+	}
+
+	public boolean isFiltered() {
+		return filtered;
+	}
+
+	public boolean isWatched() {
+		return watched;
+	}
+
+	public void setFiltered(boolean filtered) {
+		this.filtered = filtered;
+	}
+
+	public void setWatched(boolean watched) {
+		this.watched = watched;
 	}
 
 	public String toString() {
