@@ -174,7 +174,7 @@ $(function() {
 		if (data.filtered) {
 			$video.addClass('filtered');
 			$imgcontainer.append($('<div>', {
-				'class' : 'watched-badge' // TODO different badge
+				'class' : 'watched-badge' 
 			}).text("FILTERED"));
 		} else {
 			var $filter = $('<div>', {
@@ -203,6 +203,13 @@ $(function() {
 		if (data.watched) {
 			$imgcontainer.addClass("muted");
 			if (!$("#cbWatched").is(":checked")) {
+
+				$video.hide();
+			}
+		}
+		if (data.filtered) {
+			$imgcontainer.addClass("muted");
+			if (!$("#cbFiltered").is(":checked")) {
 
 				$video.hide();
 			}
