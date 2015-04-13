@@ -17,7 +17,16 @@ public class YTVideo implements Comparable<YTVideo>, Serializable {
 	private String duration;
 	private DateTime publishedAt;
 	private boolean watched = false;
+	private boolean filtered = false;
 	
+
+	public boolean isFiltered() {
+		return filtered;
+	}
+
+	public void setFiltered(boolean filtered) {
+		this.filtered = filtered;
+	}
 
 	public boolean isWatched() {
 		return watched;

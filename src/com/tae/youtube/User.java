@@ -197,6 +197,7 @@ public class User implements Serializable {
 	public List<YTVideo> getSavedVideos() {
 		List<YTVideo> videoList = new ArrayList<>();
 		videoList.addAll(videos.values());
+		doFilterVideos(videoList);
 		return videoList;
 	}
 
@@ -217,10 +218,15 @@ public class User implements Serializable {
 			}
 
 		}
-
+		doFilterVideos(result);
 		return result;
 	}
 
+	private void doFilterVideos(Collection<YTVideo>videos){
+		for (Channel channel : subscriptions.values()){
+			channel.doFilter(videos);
+		}
+	}
 	private void updateSubscriptions(String sessionId) throws IOException {
 		List<Channel> currentSubscriptions = getSubscriptionsFromYouTube(sessionId);
 
