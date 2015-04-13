@@ -326,4 +326,9 @@ public class User implements Serializable {
 		return settings;
 	}
 
+	public Channel getChannel(String channelId) {
+		// TODO Auto-generated method stub
+		return subscriptions.get(channelId);
+	}
+
 }
