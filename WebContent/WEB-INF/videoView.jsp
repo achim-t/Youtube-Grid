@@ -14,42 +14,44 @@
 <link rel="stylesheet" href="/Youtube/style.css">
 </head>
 <body>
-	<div class="container-fluid">
+	<div class="container-fluid"></div>
 
-	</div>
-	
 	<!-- Modal -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Modal title</h4>
-      </div>
-      <div class="modal-body">
-        <form>
-          <div class="form-group">
-            <input type="hidden" id="channel">
-            <input type="text" class="form-control" id="filter">
-          </div>
-          
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" id="saveFilter">Save changes</button>
-      </div>
-    </div>
-  </div>
-</div>
-	
-	
+	<div class="modal fade" id="filterModal" tabindex="-1" role="dialog"
+		aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title" id="myModalLabel">Modal title</h4>
+				</div>
+				<div class="modal-body">
+					<form>
+						<div class="form-group">
+							<input type="hidden" id="channel">
+							<input type="hidden" id="id"> 
+							<input type="text"
+								class="form-control" id="filter">
+								<button type="button" class="btn btn-primary" id="saveFilter">Save</button>
+						</div>
+
+					</form>
+				</div>
+				
+			</div>
+		</div>
+	</div>
+
+
 	<%@include file="footer.jsp"%>
 
-	
+
 	<script src="https://code.jquery.com/jquery-git2.min.js"></script>
 	<script
 		src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-		<script src="./app.js"></script>
+	<script src="./app.js"></script>
 </body>
 </html>
