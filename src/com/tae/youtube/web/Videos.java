@@ -14,25 +14,29 @@ import com.google.gson.Gson;
 import com.tae.youtube.User;
 import com.tae.youtube.YTVideo;
 
-
-@WebServlet(urlPatterns = {"/videoList", "/refreshVideos"})
+@WebServlet(urlPatterns = { "/videoList", "/refreshVideos" })
 public class Videos extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
 		String sessionId = request.getSession().getId();
 		User user = User.getBySessionId(sessionId);
-		
-		List<YTVideo> videos = user.getSavedVideos();
-		if (request.getRequestURI().endsWith("refreshVideos")){
+		List<YTVideo> videos = null;
+		if (request.getRequestURI().endsWith("videoList")) {
+			videos = user.getSavedVideos();
+		}
+
+		if (request.getRequestURI().endsWith("refreshVideos")) {
 			videos = user.getVideos(sessionId);
 		}
-		
-		Collections.sort(videos);
-		String json = new Gson().toJson(videos);
-		response.setContentType("application/json");
-	    response.setCharacterEncoding("UTF-8");
-	    response.getWriter().write(json);
+		if (videos != null) {
+			Collections.sort(videos);
+			String json = new Gson().toJson(videos);
+			response.setContentType("application/json");
+			response.setCharacterEncoding("UTF-8");
+			response.getWriter().write(json);
+		}
+
 	}
 }
