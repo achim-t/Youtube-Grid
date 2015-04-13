@@ -12,10 +12,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.auth.oauth2.TokenResponseException;
@@ -35,7 +33,8 @@ import com.google.api.services.youtube.model.VideoListResponse;
 public class User implements Serializable {
 
 	private Map<String, YTVideo> videos;
-	private Set<Channel> subscriptions;
+	private Map<String, Channel> subscriptions;
+//	private Set<Channel> subscriptions;
 	private String id;
 	private Date createdAt;
 	private transient YouTube youtube;
@@ -90,17 +89,13 @@ public class User implements Serializable {
 
 	private User() {
 		createdAt = new Date();
-		subscriptions = new HashSet<>();
+		subscriptions = new HashMap<>();
 		videos = new HashMap<>();
 		settings = new Settings();
 	}
 
-	public Set<Channel> getSubscriptions() {
-		return subscriptions;
-	}
-
-	public void setSubscriptions(Set<Channel> subscriptions) {
-		this.subscriptions = subscriptions;
+	public Collection<Channel> getSubscriptions() {
+		return subscriptions.values();
 	}
 
 	public String getId() {
@@ -117,7 +112,7 @@ public class User implements Serializable {
 
 	public List<Channel> getActiveSubscriptions() {
 		List<Channel> temp = new ArrayList<>();
-		for (Channel channel : subscriptions)
+		for (Channel channel : subscriptions.values())
 			if (channel.isActive())
 				temp.add(channel);
 		return temp;
@@ -207,15 +202,8 @@ public class User implements Serializable {
 
 	public List<YTVideo> getVideos(String sessionId) throws IOException {
 		getYoutube(sessionId);
-		List<Channel> currentSubscriptions = getSubscriptionsFromYouTube(sessionId);
-		Set<Channel> allSubscriptions = this.getSubscriptions();
-
-		for (Channel subscription : allSubscriptions) {
-			if (!currentSubscriptions.contains(subscription))
-				subscription.setActive(false);
-		}
-
-		allSubscriptions.addAll(currentSubscriptions);
+		
+		updateSubscriptions(sessionId);
 
 		List<Channel> activeSubscriptions = getActiveSubscriptions();
 
@@ -231,6 +219,20 @@ public class User implements Serializable {
 		}
 
 		return result;
+	}
+
+	private void updateSubscriptions(String sessionId) throws IOException {
+		List<Channel> currentSubscriptions = getSubscriptionsFromYouTube(sessionId);
+
+		for (Channel subscription : subscriptions.values()) {
+			if (!currentSubscriptions.contains(subscription))
+				subscription.setActive(false);
+		}
+
+		for (Channel subscription: currentSubscriptions){
+			subscriptions.put(subscription.getChannelId(), subscription);
+			
+		}
 	}
 
 	private List<YTVideo> getVideosFromChannelList(
