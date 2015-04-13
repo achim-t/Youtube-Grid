@@ -142,7 +142,7 @@ $(function() {
 		});
 
 		var $imgcontainer = $('<div>', {
-			class : 'img-container'
+			'class' : 'img-container'
 		}).appendTo($video);
 		var $a = $('<a>', {
 			'href' : "https://www.youtube.com/watch?v=" + data.id
@@ -169,8 +169,8 @@ $(function() {
 			}).click(unwatched);
 		} else {
 			var $mark = $('<div>', {
-				class : 'mark-watched',
-				title : 'mark as watched'
+				'class' : 'mark-watched',
+				'title' : 'mark as watched'
 			}).click(watched);
 		}
 
