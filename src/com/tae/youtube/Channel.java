@@ -24,41 +24,11 @@ public class Channel implements Serializable{
 		title = snippet.getTitle();
 		filters = new ArrayList<>();
 	}
-	
-	public void addFilter(String filter){
-		filters.add(filter);
-	}
-	
-	public void removeFilter(String filter){
-		filters.remove(filter);
-	}
-	
-	public Collection<String>getFilters(){
-		return filters;
-	}
 
 	public String getThumbnailUrl() {
 		return thumbnailUrl;
 	}
 
-	public void doFilter(Collection<YTVideo>videos){
-		
-		if (filters.isEmpty())
-			return;
-		for (YTVideo video: videos){
-			if (video.getChannelId().equals(channelId)){
-				video.setFiltered(false);
-				for (String filter:filters){
-					if (video.getTitle().contains(filter)){
-						video.setFiltered(true);
-						break;
-					}
-				}
-			}
-		}
-		
-		
-	}
 	public String getTitle() {
 		return title;
 	}

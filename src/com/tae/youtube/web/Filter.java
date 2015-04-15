@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.tae.youtube.Channel;
 import com.tae.youtube.User;
 
 @WebServlet("/filter")
@@ -21,14 +20,8 @@ public class Filter extends HttpServlet {
 		User user = User.getBySessionId(sessionId);
 		if (user != null) {
 			String channelId = request.getParameter("channel");
-			Channel channel = user.getChannel(channelId);
-			if (channel != null) {
-				String filter = request.getParameter("filter");
-				channel.addFilter(filter);
-			}
-			else {
-				System.out.println("channel was null");
-			}
+			String filter = request.getParameter("filter");
+			user.addFilter(channelId,filter);
 		}
 	}
 

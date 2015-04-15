@@ -39,6 +39,7 @@ public class User implements Serializable {
 	private transient YouTube youtube;
 	private String name;
 	private Settings settings;
+	private Map<String, Collection<String>> filters;
 
 	private static Map<String, User> users;
 	private static DataStore<User> userDataStore;
@@ -91,6 +92,7 @@ public class User implements Serializable {
 		subscriptions = new HashMap<>();
 		videos = new HashMap<>();
 		settings = new Settings();
+		filters = new HashMap<>();
 	}
 
 	public Collection<Channel> getSubscriptions() {
@@ -220,8 +222,17 @@ public class User implements Serializable {
 	}
 
 	private void doFilterVideos(Collection<YTVideo> videos) {
-		for (Channel channel : subscriptions.values()) {
-			channel.doFilter(videos);
+		for (YTVideo video : videos) {
+			video.setFiltered(false);
+			String channelId = video.getChannelId();
+			if (filters.containsKey(channelId)) {
+				for (String filter : filters.get(channelId)) {
+					if (video.getTitle().contains(filter)) {
+						video.setFiltered(true);
+						break;
+					}
+				}
+			}
 		}
 	}
 
@@ -329,6 +340,26 @@ public class User implements Serializable {
 
 	public Channel getChannel(String channelId) {
 		return subscriptions.get(channelId);
+	}
+
+	public Map<String, Collection<String>> getFilters() {
+		return filters;
+	}
+
+	public void setFilters(Map<String, Collection<String>> filters) {
+		this.filters.clear();
+		this.filters.putAll(filters);
+	}
+
+	public void addFilter(String channelId, String filter) {
+		if (filters.containsKey(channelId)) {
+			filters.get(channelId).add(filter);
+		} else {
+			List<String> list = new ArrayList<>();
+			list.add(filter);
+			filters.put(channelId, list);
+		}
+
 	}
 
 }

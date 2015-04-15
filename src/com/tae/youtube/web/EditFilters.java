@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -14,7 +13,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
-import com.tae.youtube.Channel;
 import com.tae.youtube.User;
 
 /**
@@ -23,19 +21,13 @@ import com.tae.youtube.User;
 @WebServlet("/editFilters")
 public class EditFilters extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
-    
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+	protected void doGet(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
 		String sessionId = request.getSession().getId();
 		User user = User.getBySessionId(sessionId);
-		Map<String,Collection<String>> allFilters = new HashMap<>();
-		for (Channel channel : user.getSubscriptions()){
-			Collection<String> filters = channel.getFilters();
-			if (!filters.isEmpty()){
-				allFilters.put(channel.getChannelId(), filters);
-			}
-		}
-		
+		Map<String, Collection<String>> allFilters = user.getFilters();
+
 		String json = new Gson().toJson(allFilters);
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
@@ -43,24 +35,24 @@ public class EditFilters extends HttpServlet {
 	}
 
 	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
+	 *      response)
 	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
 		String sessionId = request.getSession().getId();
 		User user = User.getBySessionId(sessionId);
-		BufferedReader br = new BufferedReader(new InputStreamReader(request.getInputStream()));
-        String json = "";
-        if(br != null){
-            json = br.readLine();
-//            System.out.println("json: "+json);
-        }
-        Map<String, Collection<String>> fromJson = new Gson().fromJson(json, Map.class);
-        for (String channelName:fromJson.keySet()){
-        	Channel channel = user.getChannel(channelName);
-        	Collection<String> filters = fromJson.get(channelName);
-        	channel.setFilters(filters);
-        }
-        
+		BufferedReader br = new BufferedReader(new InputStreamReader(
+				request.getInputStream()));
+		String json = null;
+		if (br != null) {
+			json = br.readLine();
+		}
+		if (json != null) {
+			Map<String, Collection<String>> filters = new Gson().fromJson(json,
+					Map.class);
+			user.setFilters(filters);
+		}
 	}
 
 }
