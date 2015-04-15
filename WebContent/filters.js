@@ -9,8 +9,6 @@ $(function() {
 		console.log(responseJson)
 
 		$.each(responseJson, function(index, channel) {
-			console.log(channel.title)
-//			console.log(channel.filters)
 			if (channel.filters.length > 0) {
 				var $formGroup = $('<div>', {
 					'class' : 'form-group',
@@ -52,6 +50,7 @@ $(function() {
 			data : json,
 			contentType : 'application/json; charset=UTF-8'
 		});
+		$('#editFiltersModal').modal('hide');
 	})
 	function createJSON() {
 		jsonObj = {};
