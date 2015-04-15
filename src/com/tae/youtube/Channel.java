@@ -86,4 +86,9 @@ public class Channel implements Serializable{
 	public void setActive(boolean isActive) {
 		this.isActive = isActive;
 	}
+
+	public void setFilters(Collection<String> collection) {
+		filters.clear();
+		filters.addAll(collection);
+	}
 }
