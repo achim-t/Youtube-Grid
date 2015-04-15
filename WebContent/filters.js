@@ -2,42 +2,56 @@
  * 
  */
 $(function() {
-	$.ajax({
-		url : './editFilters'
+	$('#editFiltersModal').on('show.bs.modal', function(event) {
+		var form = $('form#editFilterForm').empty();
+		$.ajax({
+			url : './editFilters'
 
-	}).done(function(responseJson) {
-		console.log(responseJson)
+		}).done(function(responseJson) {
+			console.log(responseJson)
 
-		$.each(responseJson, function(index, channel) {
-			if (channel.filters.length > 0) {
-				var $formGroup = $('<div>', {
-					'class' : 'form-group',
-				})
-				$('form').append($('<input>', {
-					'type' : 'hidden',
-					'name' : 'channel'
-				}).val(channel.channelId))
-				$.each(channel.filters, function(index, filter) {
-					var $row = $('<div>', {
-						'class' : 'row'
+			$.each(responseJson, function(index, channel) {
+				if (channel.filters.length > 0) {
+					var $formGroup = $('<div>', {
+						'class' : 'form-group',
+					})
+					form.append($('<input>', {
+						'type' : 'hidden',
+						'name' : 'channel'
+					}).val(channel.channelId))
+					$.each(channel.filters, function(index, filter) {
+						var $row = $('<div>', {
+							'class' : 'input-group'
+						});
+						form.append($row);
+						$row.append($('<input>', {
+							'type' : 'text',
+							'name' : 'filter',
+							'class' : 'form-control',
+							'channel' : channel.channelId
+
+						}).val(filter))
+
+						var $span = $('<span>', {
+							'class' : 'input-group-btn'
+						});
+						$row.append($span);
+						$span.append($('<button>', {
+							'class' : 'btn btn-default',
+							'type' : 'button'
+						}).append($('<span>', {
+							'class' : 'glyphicon glyphicon-remove',
+							'style' : 'color:red'
+						})).click(function(event) {
+							event.preventDefault();
+							$(this).closest('.input-group').remove();
+						}));
 					});
-					$('form').append($row);
-					$row.append($('<input>', {
-						'type' : 'text',
-						'name' : 'filter',
-						'channel' : channel.channelId
+				}
+			})
 
-					}).val(filter))
-					$row.append($('<button>').text('x').click(function(event) {
-						event.preventDefault();
-						$(this).closest('.row').remove();
-					}));
-				})
-			}
-		})
-
+		});
 	});
-
 	$('button#submit').click(function() {
 
 		var json = createJSON();
@@ -54,7 +68,8 @@ $(function() {
 	})
 	function createJSON() {
 		jsonObj = {};
-		$("input[name=channel]").each(function() {
+		var form = $('form#editFilterForm')
+		$("input[name=channel]", form).each(function() {
 			var channel = $(this).val();
 			item = [];
 			$("input[channel=" + channel + "]").each(function() {
