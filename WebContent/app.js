@@ -57,15 +57,15 @@ $(function() {
 		$imgcontainer.append($('<div class="watched-badge">'+state.toUpperCase()+'</div>'));
 	}
 	var markWatched = function(video) {
+		if (!$("#cbWatched").is(":checked")) {
 
+			video.hide("fast");
+		}
 		markAs(video, 'watched');
 		mark = $(".mark-watched", video);
 		mark.off();
 		mark.click(unwatched)
-		if (!$("#cbWatched").is(":checked")) {
-
-			video.hide();
-		}
+		
 		mark.attr("title", "Mark as Unwatched");
 		$.ajax({
 			url : './video',
