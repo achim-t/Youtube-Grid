@@ -47,6 +47,7 @@ public class Channel implements Serializable{
 			return;
 		for (YTVideo video: videos){
 			if (video.getChannelId().equals(channelId)){
+				video.setFiltered(false);
 				for (String filter:filters){
 					if (video.getTitle().contains(filter)){
 						video.setFiltered(true);
