@@ -117,13 +117,13 @@ $(function() {
 		url : './videoList'
 
 	}).done(function(responseJson) {
-		$.each(responseJson, createVideo2);
+		$.each(responseJson, createVideo);
 		console.log("trying to refresh Videos")
 		$.ajax({
 			url : './refreshVideos'
 		}).done(function(responseJson) {
 			console.log("got response for refreshing videos")
-			$.each(responseJson, createVideo2);
+			$.each(responseJson, createVideo);
 
 		});
 
