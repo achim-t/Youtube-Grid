@@ -28,5 +28,8 @@
 		<button class="btn btn-danger center" id="btnMarkAll">
 			Mark all as watched
 		</button>
+		<button class="btn btn-default" id="btnEditFilters" data-toggle="modal" data-target="#editFiltersModal">
+			Manage Filters
+		</button>
 			</div>
 </footer>
