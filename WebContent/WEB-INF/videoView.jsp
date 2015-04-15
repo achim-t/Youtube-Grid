@@ -45,7 +45,7 @@
 		</div>
 	</div>
 
-
+	<%@include file="filter.html"%>
 	<%@include file="footer.jsp"%>
 
 <script id="template" type="x-tmpl-mustache">
@@ -71,5 +71,6 @@
 	<script
 		src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 	<script src="./app.js"></script>
+	<script src="./filters.js"></script>
 </body>
 </html>
