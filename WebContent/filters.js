@@ -12,9 +12,25 @@ $(function() {
 
 			$.each(responseJson, function(index, channel) {
 				if (channel.filters.length > 0) {
-					var $formGroup = $('<div>', {
-						'class' : 'form-group',
+					var $channel = $('<div>', {
+						'class' : 'row'
 					})
+					$channelInfo = $('<div>', {
+						'class' : 'col-sm-3'
+					})
+					$channelInfo.append($('<img>', {
+						'src' : channel.thumbnailUrl,
+						'class' : 'img-thumbnail'
+					}));
+					$channelInfo.append($('<div>', {
+						'class' : 'caption'
+					}).text(channel.title))
+					$channel.append($channelInfo)
+					form.append($channel)
+					var $col = $('<div>', {
+						'class' : 'form-group col-sm-9',
+					})
+					$channel.append($col)
 					form.append($('<input>', {
 						'type' : 'hidden',
 						'name' : 'channel'
@@ -23,7 +39,7 @@ $(function() {
 						var $row = $('<div>', {
 							'class' : 'input-group'
 						});
-						form.append($row);
+						$col.append($row);
 						$row.append($('<input>', {
 							'type' : 'text',
 							'name' : 'filter',
@@ -44,7 +60,10 @@ $(function() {
 							'style' : 'color:red'
 						})).click(function(event) {
 							event.preventDefault();
-							$(this).closest('.input-group').remove();
+							$target = $(this).closest('.input-group');
+							$target.hide(function() {
+								$target.remove();
+							});
 						}));
 					});
 				}
