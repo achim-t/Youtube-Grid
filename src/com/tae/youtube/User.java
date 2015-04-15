@@ -342,8 +342,14 @@ public class User implements Serializable {
 		return subscriptions.get(channelId);
 	}
 
-	public Map<String, Collection<String>> getFilters() {
-		return filters;
+	public Collection<Channel> getFilters() {
+		Collection<Channel> list = new ArrayList<>(); 
+		for (String channelId : filters.keySet()){
+			Channel channel = subscriptions.get(channelId);
+			channel.setFilters(filters.get(channelId));
+			list.add(channel);
+		}
+		return list;
 	}
 
 	public void setFilters(Map<String, Collection<String>> filters) {
