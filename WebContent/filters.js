@@ -84,6 +84,7 @@ $(function() {
 			contentType : 'application/json; charset=UTF-8'
 		});
 		$('#editFiltersModal').modal('hide');
+		reload()
 	})
 	function createJSON() {
 		jsonObj = {};

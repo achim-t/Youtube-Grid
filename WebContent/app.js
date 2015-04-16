@@ -1,10 +1,5 @@
-/**
- * 
- */
-$(function() {
-	var template = Handlebars.compile($('#template').html());
-	
-	toggleWatched = function() {
+var l = Ladda.create(document.querySelector('.ladda-button'));
+	function toggleWatched() {
 
 		if (this.checked) {
 			$.ajax({
@@ -26,8 +21,9 @@ $(function() {
 			$(".watched").hide();
 		}
 
-	};
-	toggleFiltered = function() {
+	}
+	;
+	function toggleFiltered() {
 
 		if (this.checked) {
 			$.ajax({
@@ -49,14 +45,16 @@ $(function() {
 			$(".filtered").hide();
 		}
 
-	};
-	var markAs = function(video, state){
+	}
+	;
+	function markAs(video, state) {
 		video.addClass(state);
 		var $imgcontainer = $(".img-container", video);
 		$imgcontainer.addClass("muted");
-		$imgcontainer.append($('<div class="watched-badge">'+state.toUpperCase()+'</div>'));
+		$imgcontainer.append($('<div class="watched-badge">'
+				+ state.toUpperCase() + '</div>'));
 	}
-	var markWatched = function(video) {
+	function markWatched(video) {
 		if (!$("#cbWatched").is(":checked")) {
 
 			video.hide("fast");
@@ -65,7 +63,7 @@ $(function() {
 		mark = $(".mark-watched", video);
 		mark.off();
 		mark.click(unwatched)
-		
+
 		mark.attr("title", "Mark as Unwatched");
 		$.ajax({
 			url : './video',
@@ -75,15 +73,16 @@ $(function() {
 				'id' : video[0].id
 			}
 		});
-	};
-	var watched = function(e) {
+	}
+	;
+	function watched(e) {
 		e.preventDefault();
 		console.log("mark as watched");
 		var video = $(this).closest(".video");
-
 		markWatched(video);
-	};
-	var unwatched = function(e) {
+	}
+	;
+	function unwatched(e) {
 		e.preventDefault();
 		var $video = $(this).closest(".video");
 		$video.removeClass("watched")
@@ -103,33 +102,20 @@ $(function() {
 		});
 	}
 
-	$("#cbWatched").on("change", toggleWatched);
-	$("#cbFiltered").on("change", toggleFiltered);
-	$('#btnMarkAll').on("click", function() {
-		$('.video').addClass("muted");
-		if (!$("#cbWatched").is(":checked")) {
-
-			$('.video').hide();
-		}
-	});
 	
-	$('#btnRefresh').on("click",refresh);
-	
-	var l = Ladda.create(document.querySelector( '.ladda-button' ));
-	l.start();
-	$.ajax({
-		url : './videoList'
-
-	}).done(function(responseJson) {
-		l.stop();
-		responseJson.reverse();
-		$.each(responseJson, createVideo);
-		
-		refresh();
-
-	});
-
-	function refresh(){
+	function reload() {
+		$('.container-fluid').empty()
+		l.start();
+		$.ajax({
+			url : './videoList'
+		}).done(function(responseJson) {
+			l.stop();
+			responseJson.reverse();
+			$.each(responseJson, createVideo);
+			refresh();
+		});
+	}
+	function refresh() {
 		console.log("trying to refresh Videos")
 		l.start();
 		$.ajax({
@@ -141,13 +127,14 @@ $(function() {
 			l.stop();
 		});
 	}
-	var createVideo2 = function(index, data){
+	function createVideo2(index, data) {
 		var html = template(data);
 		var $video = $('<div>').html(html);
 		$video.appendTo($('.container-fluid'));
-	};
-	
-	var createVideo = function(index, data) {
+	}
+	;
+
+	function createVideo(index, data) {
 		var $video = $('<div>', {
 			'class' : 'video',
 			'id' : data.id
@@ -194,7 +181,7 @@ $(function() {
 		if (data.filtered) {
 			$video.addClass('filtered');
 			$imgcontainer.append($('<div>', {
-				'class' : 'watched-badge' 
+				'class' : 'watched-badge'
 			}).text("FILTERED"));
 		} else {
 			var $filter = $('<div>', {
@@ -203,6 +190,7 @@ $(function() {
 				'data-target' : '#filterModal',
 				'data-title' : data.title,
 				'data-channel' : data.channelId,
+				'data-channelname' : data.channelName,
 				'data-id' : data.id,
 				'title' : 'Filter Videos like this'
 			}).appendTo($imgcontainer);
@@ -214,16 +202,11 @@ $(function() {
 		$video.append($('<div>', {
 			'class' : 'title'
 		}).text(data.title));
-		$video.append(
-				$('<div>', 
-						{ 'class':'byline' })
-						.text("by ")
-						.append(
-								$('<span>', {
-									'class': 'channel'})
-									.text(data.channelName)
-								)
-				);
+		$video.append($('<div>', {
+			'class' : 'byline'
+		}).text("by ").append($('<span>', {
+			'class' : 'channel'
+		}).text(data.channelName)));
 		$('.container-fluid').prepend($video);
 		if (data.watched) {
 			$imgcontainer.addClass("muted");
@@ -241,23 +224,38 @@ $(function() {
 		}
 	}
 
-	$('#filterModal').on('show.bs.modal', function(event) {
-		var button = $(event.relatedTarget) // Button that triggered the
-		// modal
-		var title = button.data('title') // Extract info from data-*
-		// attributes
-		// If necessary, you could initiate an AJAX request here (and then
-		// do the updating in a callback).
-		// Update the modal's content. We'll use jQuery here, but you could
-		// use a data binding library or other methods instead.
-		var channel = button.data('channel')
-		var id = button.data('id')
-		var modal = $(this)
-		modal.find('.modal-title').text('Filter Videos on Channel' + channel)
-		modal.find('#filter').val(title)
-		modal.find('#channel').val(channel)
-		modal.find('#id').val(id)
+$(function() {
+	var template = Handlebars.compile($('#template').html());
 
+
+	$('#filterModal').on(
+			'show.bs.modal',
+			function(event) {
+				var button = $(event.relatedTarget) // Button that triggered the
+				// modal
+				var title = button.data('title') // Extract info from data-*
+				// attributes
+				// If necessary, you could initiate an AJAX request here (and
+				// then
+				// do the updating in a callback).
+				// Update the modal's content. We'll use jQuery here, but you
+				// could
+				// use a data binding library or other methods instead.
+				var channel = button.data('channel')
+				var channelName = button.data('channelname')
+				var id = button.data('id')
+				var modal = $(this)
+				modal.find('.modal-title').text(
+						"Filter Videos on " + channelName + "'s Channel")
+				modal.find('#filter').val(title)
+				modal.find('#channel').val(channel)
+				modal.find('#id').val(id)
+
+			})
+
+	$('#filterModal').on('shown.bs.modal', function() {
+		$('#filter').focus()
+		$('#filter').select()
 	})
 	$('#saveFilter').on('click', function(event) {
 		$.ajax({
@@ -268,15 +266,21 @@ $(function() {
 				'channel' : $('#channel').val()
 			}
 		});
-		console.log($('#filter').val());
-		console.log($('#channel').val());
 		$('#filterModal').modal('hide');
-		console.log('#'+$('#id').val())
-		var video = $('#'+$('#id').val())
-		markAs(video, 'filtered')
-		
-		if (!$("#cbFiltered").is(":checked")){
-			video.hide()
+		reload()
+	});
+	$("#cbWatched").on("change", toggleWatched);
+	$("#cbFiltered").on("change", toggleFiltered);
+	$('#btnMarkAll').on("click", function() {
+		$('.video').addClass("muted");
+		if (!$("#cbWatched").is(":checked")) {
+
+			$('.video').hide();
 		}
 	});
+
+	$('#btnRefresh').on("click", refresh);
+
+	
+	reload()
 });

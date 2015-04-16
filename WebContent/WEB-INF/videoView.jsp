@@ -31,10 +31,15 @@
 				<div class="modal-body">
 					<form>
 						<div class="form-group">
+
 							<input type="hidden" id="channel"> <input type="hidden"
-								id="id"> <input type="text" class="form-control"
-								id="filter">
-							<button type="button" class="btn btn-primary" id="saveFilter">Save</button>
+								id="id">
+							<div class="input-group">
+								<input type="text" class="form-control" id="filter" autofocus> 
+								<span class="input-group-btn">
+									<button type="button" class="btn btn-primary" id="saveFilter">Save</button>
+								</span>
+							</div>
 						</div>
 
 					</form>
