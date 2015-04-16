@@ -1,6 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-	pageEncoding="ISO-8859-1"
-	%>
+	pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -12,6 +11,7 @@
 <link rel="stylesheet"
 	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
 <link rel="stylesheet" href="/Youtube/style.css">
+<link rel="stylesheet" href="./ladda-themeless.min.css">
 </head>
 <body>
 	<div class="container-fluid"></div>
@@ -31,16 +31,15 @@
 				<div class="modal-body">
 					<form>
 						<div class="form-group">
-							<input type="hidden" id="channel">
-							<input type="hidden" id="id"> 
-							<input type="text"
-								class="form-control" id="filter">
-								<button type="button" class="btn btn-primary" id="saveFilter">Save</button>
+							<input type="hidden" id="channel"> <input type="hidden"
+								id="id"> <input type="text" class="form-control"
+								id="filter">
+							<button type="button" class="btn btn-primary" id="saveFilter">Save</button>
 						</div>
 
 					</form>
 				</div>
-				
+
 			</div>
 		</div>
 	</div>
@@ -48,7 +47,7 @@
 	<%@include file="filter.html"%>
 	<%@include file="footer.jsp"%>
 
-<script id="template" type="x-tmpl-mustache">
+	<script id="template" type="x-tmpl-mustache">
 <div class="video" id="{{id}}">
   	<div class="img-container">
 		<a href="https://www.youtube.com/watch?v={{id}}">
@@ -66,11 +65,14 @@
 	<div class="byline">by <span class="channel">{{channelName}}</span></div>
 </div>
 </script>
-<script src="//cdn.jsdelivr.net/handlebarsjs/3.0.0/handlebars.js"></script>
+	<script src="//cdn.jsdelivr.net/handlebarsjs/3.0.0/handlebars.js"></script>
 	<script src="https://code.jquery.com/jquery-git2.min.js"></script>
 	<script
 		src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+	<script src="./spin.min.js"></script>
+	<script src="./ladda.min.js"></script>
 	<script src="./app.js"></script>
 	<script src="./filters.js"></script>
+
 </body>
 </html>
