@@ -175,7 +175,7 @@ function createVideo(index, data) {
 	if (data.filtered) {
 		$video.addClass('filtered');
 		$imgcontainer.append($('<div>', {
-			'class' : 'watched-badge'
+			'class' : 'filtered-badge'
 		}).text("FILTERED"));
 	} else {
 		var $filter = $('<div>', {

@@ -43,10 +43,9 @@ position: absolute;
 }
 
 
-.watched-badge {
+.watched-badge, .filtered-badge{
     position: absolute;
     top: 10px;
-    left: 10px;
     padding: 2px 4px;
     line-height: 1.3em;
     text-align: left;
@@ -58,6 +57,12 @@ position: absolute;
     cursor: pointer;
 }
 
+.watched-badge{
+    left: 10px;
+}
+.filtered-badge {
+	right: 10px;	
+}
 .mark-watched {
 	position: absolute;
 	display: none;
