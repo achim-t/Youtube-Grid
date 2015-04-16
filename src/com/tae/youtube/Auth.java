@@ -24,8 +24,8 @@ public class Auth {
 	private static final Collection<String> SCOPES = Collections
 			.singleton("https://www.googleapis.com/auth/youtube.readonly");
 	private static GoogleAuthorizationCodeFlow flow = null;
-	private static final String CREDENTIALS_DIRECTORY = ".oauth-credentials";
-	private static final String CREDENTIAL_DATASTORE = "datastore";
+	private static final String CREDENTIALS_DIRECTORY = "local_data";
+	private static final String CREDENTIAL_DATASTORE = "oauth";
 	public static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
 	public static final JsonFactory JSON_FACTORY = new JacksonFactory();
 
