@@ -37,7 +37,7 @@ public class Login extends HttpServlet {
 						+ user.getCreatedAt());
 			}
 		}
-		req.getRequestDispatcher("/index").forward(req, resp);
+		resp.sendRedirect("./index");
 	}
 
 }
