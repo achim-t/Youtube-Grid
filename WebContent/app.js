@@ -2,6 +2,8 @@
  * 
  */
 $(function() {
+	var template = Handlebars.compile($('#template').html());
+	
 	toggleWatched = function() {
 
 		if (this.checked) {
@@ -55,15 +57,15 @@ $(function() {
 		$imgcontainer.append($('<div class="watched-badge">'+state.toUpperCase()+'</div>'));
 	}
 	var markWatched = function(video) {
+		if (!$("#cbWatched").is(":checked")) {
 
+			video.hide("fast");
+		}
 		markAs(video, 'watched');
 		mark = $(".mark-watched", video);
 		mark.off();
 		mark.click(unwatched)
-		if (!$("#cbWatched").is(":checked")) {
-
-			video.hide();
-		}
+		
 		mark.attr("title", "Mark as Unwatched");
 		$.ajax({
 			url : './video',
@@ -110,23 +112,36 @@ $(function() {
 			$('.video').hide();
 		}
 	});
-
+	
+	var l = Ladda.create(document.querySelector( '.ladda-button' ));
+	l.start();
 	$.ajax({
 		url : './videoList'
 
 	}).done(function(responseJson) {
+		l.stop();
+		responseJson.reverse();
 		$.each(responseJson, createVideo);
+		
 		console.log("trying to refresh Videos")
+		l.start();
 		$.ajax({
 			url : './refreshVideos'
 		}).done(function(responseJson) {
+			responseJson.reverse();
 			console.log("got response for refreshing videos")
 			$.each(responseJson, createVideo);
-
+			l.stop();
 		});
 
 	});
 
+	var createVideo2 = function(index, data){
+		var html = template(data);
+		var $video = $('<div>').html(html);
+		$video.appendTo($('.container-fluid'));
+	};
+	
 	var createVideo = function(index, data) {
 		var $video = $('<div>', {
 			'class' : 'video',
@@ -134,7 +149,7 @@ $(function() {
 		});
 
 		var $imgcontainer = $('<div>', {
-			class : 'img-container'
+			'class' : 'img-container'
 		}).appendTo($video);
 		var $a = $('<a>', {
 			'href' : "https://www.youtube.com/watch?v=" + data.id
@@ -161,8 +176,8 @@ $(function() {
 			}).click(unwatched);
 		} else {
 			var $mark = $('<div>', {
-				class : 'mark-watched',
-				title : 'mark as watched'
+				'class' : 'mark-watched',
+				'title' : 'mark as watched'
 			}).click(watched);
 		}
 
@@ -194,12 +209,17 @@ $(function() {
 		$video.append($('<div>', {
 			'class' : 'title'
 		}).text(data.title));
-		$video.append($('<div>', {
-			'class' : 'byline'
-		}).text("by ")).append($('<span>', {
-			'class' : 'channel'
-		}).text(data.channelName));
-		$video.appendTo($('.container-fluid'));
+		$video.append(
+				$('<div>', 
+						{ 'class':'byline' })
+						.text("by ")
+						.append(
+								$('<span>', {
+									'class': 'channel'})
+									.text(data.channelName)
+								)
+				);
+		$('.container-fluid').prepend($video);
 		if (data.watched) {
 			$imgcontainer.addClass("muted");
 			if (!$("#cbWatched").is(":checked")) {

@@ -1,20 +1,29 @@
 package com.tae.youtube;
+
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.google.api.client.util.DateTime;
+import com.google.api.services.youtube.YouTube;
+import com.google.api.services.youtube.model.SearchListResponse;
+import com.google.api.services.youtube.model.SearchResult;
 import com.google.api.services.youtube.model.Subscription;
 import com.google.api.services.youtube.model.SubscriptionSnippet;
+import com.google.api.services.youtube.model.Video;
+import com.google.api.services.youtube.model.VideoListResponse;
 
 @SuppressWarnings("serial")
-public class Channel implements Serializable{
+public class Channel implements Serializable {
 
 	private String thumbnailUrl;
 	private String title;
 	private String channelId;
-	private boolean isActive=true;
+	private boolean isActive = true;
 	private List<String> filters;
+	private DateTime lastRefreshTime;
 
 	public Channel(Subscription sub) {
 		SubscriptionSnippet snippet = sub.getSnippet();
@@ -23,41 +32,13 @@ public class Channel implements Serializable{
 		channelId = snippet.getResourceId().getChannelId();
 		title = snippet.getTitle();
 		filters = new ArrayList<>();
-	}
-	
-	public void addFilter(String filter){
-		filters.add(filter);
-	}
-	
-	public void removeFilter(String filter){
-		filters.remove(filter);
-	}
-	
-	public Collection<String>getFilters(){
-		return filters;
+		lastRefreshTime = new DateTime(0);
 	}
 
 	public String getThumbnailUrl() {
 		return thumbnailUrl;
 	}
 
-	public void doFilter(Collection<YTVideo>videos){
-		
-		if (filters.isEmpty())
-			return;
-		for (YTVideo video: videos){
-			if (video.getChannelId().equals(channelId)){
-				for (String filter:filters){
-					if (video.getTitle().contains(filter)){
-						video.setFiltered(true);
-						break;
-					}
-				}
-			}
-		}
-		
-		
-	}
 	public String getTitle() {
 		return title;
 	}
@@ -68,14 +49,13 @@ public class Channel implements Serializable{
 
 	@Override
 	public boolean equals(Object obj) {
-		if (! (obj instanceof Channel))
+		if (!(obj instanceof Channel))
 			return false;
 		return channelId.equals(((Channel) obj).getChannelId());
 	}
 
 	@Override
 	public int hashCode() {
-		
 		return channelId.hashCode();
 	}
 
@@ -85,5 +65,39 @@ public class Channel implements Serializable{
 
 	public void setActive(boolean isActive) {
 		this.isActive = isActive;
+	}
+
+	public void setFilters(Collection<String> collection) {
+		filters.clear();
+		filters.addAll(collection);
+	}
+
+	public List<YTVideo> getVideos(YouTube youtube) throws IOException {
+		List<YTVideo> list = new ArrayList<>();
+
+		String ids = "";
+		com.google.api.services.youtube.YouTube.Search.List searchList = youtube
+				.search().list("id").setChannelId(channelId).setOrder("date")
+				.setType("video").setMaxResults(50L)
+				.setPublishedAfter(lastRefreshTime);
+
+		SearchListResponse listResponse = searchList.execute();
+		for (SearchResult item : listResponse.getItems()) {
+			String id = item.getId().getVideoId();
+			ids += "," + id;
+		}
+		ids = ids.substring(1);
+		VideoListResponse videoListResponse = youtube.videos()
+				.list("snippet,contentDetails").setId(ids).execute();
+
+		for (Video v : videoListResponse.getItems()) {
+			YTVideo video = new YTVideo(v);
+			video.setChannelName(title);
+			list.add(video);
+			if (video.getPublishedAt().getValue() > lastRefreshTime.getValue()) {
+				lastRefreshTime = video.getPublishedAt();
+			}
+		}
+		return list;
 	}
 }
