@@ -112,19 +112,26 @@ $(function() {
 			$('.video').hide();
 		}
 	});
-
+	
+	var l = Ladda.create(document.querySelector( '.ladda-button' ));
+	l.start();
 	$.ajax({
 		url : './videoList'
 
 	}).done(function(responseJson) {
+		l.stop();
+		responseJson.reverse();
 		$.each(responseJson, createVideo);
+		
 		console.log("trying to refresh Videos")
+		l.start();
 		$.ajax({
 			url : './refreshVideos'
 		}).done(function(responseJson) {
+			responseJson.reverse();
 			console.log("got response for refreshing videos")
 			$.each(responseJson, createVideo);
-
+			l.stop();
 		});
 
 	});
@@ -212,7 +219,7 @@ $(function() {
 									.text(data.channelName)
 								)
 				);
-		$video.appendTo($('.container-fluid'));
+		$('.container-fluid').prepend($video);
 		if (data.watched) {
 			$imgcontainer.addClass("muted");
 			if (!$("#cbWatched").is(":checked")) {
