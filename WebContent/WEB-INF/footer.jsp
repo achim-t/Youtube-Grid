@@ -22,7 +22,7 @@
 		</div>
 		
 
-		<button class="btn btn-default ladda-button" data-spinner-color="#000000" data-style="zoom-in" title="Refresh" data-size='1'>
+		<button class="btn btn-default ladda-button" data-spinner-color="#000000" id="btnRefresh" data-style="zoom-in" title="Refresh" data-size='1'>
 		<span class="ladda-label"><span class="glyphicon glyphicon-refresh " aria-hidden="true"></span></span>
  			
 		</button>

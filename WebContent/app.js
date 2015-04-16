@@ -113,6 +113,8 @@ $(function() {
 		}
 	});
 	
+	$('#btnRefresh').on("click",refresh);
+	
 	var l = Ladda.create(document.querySelector( '.ladda-button' ));
 	l.start();
 	$.ajax({
@@ -123,6 +125,11 @@ $(function() {
 		responseJson.reverse();
 		$.each(responseJson, createVideo);
 		
+		refresh();
+
+	});
+
+	function refresh(){
 		console.log("trying to refresh Videos")
 		l.start();
 		$.ajax({
@@ -133,9 +140,7 @@ $(function() {
 			$.each(responseJson, createVideo);
 			l.stop();
 		});
-
-	});
-
+	}
 	var createVideo2 = function(index, data){
 		var html = template(data);
 		var $video = $('<div>').html(html);
