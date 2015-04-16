@@ -86,7 +86,7 @@ position: absolute;
 	float: left;
 	position: relative;
 	width: 200px;
-/* 	height: 200px; */
+ 	height: 164px; 
 	margin: 12px 4px;
 	border: none;
 	overflow: hidden;
@@ -128,14 +128,6 @@ position: absolute;
     -webkit-line-clamp:2;
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    
-    float: left;
-	;
-	
-	
-	
-	
-	
 }
 
 .title:hover {
