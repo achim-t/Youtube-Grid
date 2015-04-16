@@ -1,10 +1,12 @@
 package com.tae.youtube;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.google.api.client.util.DateTime;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.SearchListResponse;
 import com.google.api.services.youtube.model.SearchResult;
@@ -14,13 +16,14 @@ import com.google.api.services.youtube.model.Video;
 import com.google.api.services.youtube.model.VideoListResponse;
 
 @SuppressWarnings("serial")
-public class Channel implements Serializable{
+public class Channel implements Serializable {
 
 	private String thumbnailUrl;
 	private String title;
 	private String channelId;
-	private boolean isActive=true;
+	private boolean isActive = true;
 	private List<String> filters;
+	private DateTime lastRefreshTime;
 
 	public Channel(Subscription sub) {
 		SubscriptionSnippet snippet = sub.getSnippet();
@@ -29,6 +32,7 @@ public class Channel implements Serializable{
 		channelId = snippet.getResourceId().getChannelId();
 		title = snippet.getTitle();
 		filters = new ArrayList<>();
+		lastRefreshTime = new DateTime(0);
 	}
 
 	public String getThumbnailUrl() {
@@ -45,14 +49,13 @@ public class Channel implements Serializable{
 
 	@Override
 	public boolean equals(Object obj) {
-		if (! (obj instanceof Channel))
+		if (!(obj instanceof Channel))
 			return false;
 		return channelId.equals(((Channel) obj).getChannelId());
 	}
 
 	@Override
 	public int hashCode() {
-		
 		return channelId.hashCode();
 	}
 
@@ -68,22 +71,16 @@ public class Channel implements Serializable{
 		filters.clear();
 		filters.addAll(collection);
 	}
-	
+
 	public List<YTVideo> getVideos(YouTube youtube) throws IOException {
 		List<YTVideo> list = new ArrayList<>();
 
 		String ids = "";
 		com.google.api.services.youtube.YouTube.Search.List searchList = youtube
-				.search().list("id").setChannelId(channelId)
-				.setOrder("date").setType("video").setMaxResults(50L);
-		// DateTime publishedAt;
-		// try {
-		// YTVideo newestVideo = channel.getNewestVideo();
-		// publishedAt = newestVideo.getPublishedAt();
-		// searchList.setPublishedAfter(publishedAt);
-		// } catch (NoSuchElementException e) {
-		//
-		// }
+				.search().list("id").setChannelId(channelId).setOrder("date")
+				.setType("video").setMaxResults(50L)
+				.setPublishedAfter(lastRefreshTime);
+
 		SearchListResponse listResponse = searchList.execute();
 		for (SearchResult item : listResponse.getItems()) {
 			String id = item.getId().getVideoId();
@@ -97,6 +94,9 @@ public class Channel implements Serializable{
 			YTVideo video = new YTVideo(v);
 			video.setChannelName(title);
 			list.add(video);
+			if (video.getPublishedAt().getValue() > lastRefreshTime.getValue()) {
+				lastRefreshTime = video.getPublishedAt();
+			}
 		}
 		return list;
 	}
