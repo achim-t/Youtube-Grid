@@ -9,7 +9,13 @@ function toggleWatched() {
 				'setting' : 'showWatched'
 			}
 		});
-		$(".watched").show();
+		if (!$("#cbFiltered").is(":checked")) {
+			$(".watched").not(".filtered").show();
+		}
+		else {
+			$(".watched").show();
+		} 
+		
 	} else {
 		$.ajax({
 			url : './user',
@@ -32,7 +38,13 @@ function toggleFiltered() {
 				'setting' : 'showFiltered'
 			}
 		});
-		$(".filtered").show();
+		if (!$("#cbWatched").is(":checked")) {
+			$(".filtered").not(".watched").show();
+		}
+		else {
+			$(".filtered").show();
+		} 
+		
 	} else {
 		$.ajax({
 			url : './user',
