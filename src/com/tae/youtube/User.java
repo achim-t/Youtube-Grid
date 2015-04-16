@@ -22,12 +22,8 @@ import com.google.api.client.util.store.DataStore;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.ChannelListResponse;
-import com.google.api.services.youtube.model.SearchListResponse;
-import com.google.api.services.youtube.model.SearchResult;
 import com.google.api.services.youtube.model.Subscription;
 import com.google.api.services.youtube.model.SubscriptionListResponse;
-import com.google.api.services.youtube.model.Video;
-import com.google.api.services.youtube.model.VideoListResponse;
 
 @SuppressWarnings("serial")
 public class User implements Serializable {
@@ -258,37 +254,12 @@ public class User implements Serializable {
 		List<YTVideo> videoList = new ArrayList<>();
 
 		for (Channel channel : channelList) {
-			String ids = "";
-			com.google.api.services.youtube.YouTube.Search.List searchList = youtube
-					.search().list("id").setChannelId(channel.getChannelId())
-					.setOrder("date").setType("video").setMaxResults(50L);
-			// DateTime publishedAt;
-			// try {
-			// YTVideo newestVideo = channel.getNewestVideo();
-			// publishedAt = newestVideo.getPublishedAt();
-			// searchList.setPublishedAfter(publishedAt);
-			// } catch (NoSuchElementException e) {
-			//
-			// }
-			SearchListResponse listResponse = searchList.execute();
-			for (SearchResult item : listResponse.getItems()) {
-				String id = item.getId().getVideoId();
-				ids += "," + id;
-			}
-			ids = ids.substring(1);
-			VideoListResponse videoListResponse = youtube.videos()
-					.list("snippet,contentDetails").setId(ids).execute();
-
-			for (Video v : videoListResponse.getItems()) {
-				YTVideo video = new YTVideo(v);
-				video.setChannelName(channel.getTitle());
-				videoList.add(video);
-			}
+			List<YTVideo> list = channel.getVideos(youtube);
+			videoList.addAll(list);
 		}
 
 		Collections.sort(videoList);
 		return videoList;
-
 	}
 
 	private List<Channel> getSubscriptionsFromYouTube(String sessionId)
@@ -343,8 +314,8 @@ public class User implements Serializable {
 	}
 
 	public Collection<Channel> getFilters() {
-		Collection<Channel> list = new ArrayList<>(); 
-		for (String channelId : filters.keySet()){
+		Collection<Channel> list = new ArrayList<>();
+		for (String channelId : filters.keySet()) {
 			Channel channel = subscriptions.get(channelId);
 			channel.setFilters(filters.get(channelId));
 			list.add(channel);
