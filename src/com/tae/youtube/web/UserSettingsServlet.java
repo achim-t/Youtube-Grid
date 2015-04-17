@@ -20,7 +20,7 @@ public class UserSettingsServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		String sessionId = request.getSession().getId();
-		User user = User.getBySessionId(sessionId);
+		User user = User.getUserBySessionId(sessionId);
 		String setting = request.getParameter("setting");
 		if (user != null && setting != null) {
 

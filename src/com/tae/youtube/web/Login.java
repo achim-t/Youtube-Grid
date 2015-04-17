@@ -21,7 +21,7 @@ public class Login extends HttpServlet {
 			throws ServletException, IOException {
 		String sessionId = req.getSession().getId();
 
-		User user = User.getBySessionId(sessionId);
+		User user = User.getUserBySessionId(sessionId);
 		if (user == null) {
 			Credential credential = Auth.getCredential(sessionId);
 			if (credential == null) {
@@ -32,9 +32,6 @@ public class Login extends HttpServlet {
 
 			else {
 				user = User.createUser(credential, sessionId);
-
-				System.out.println("user was created at: "
-						+ user.getCreatedAt());
 			}
 		}
 		resp.sendRedirect("./index");

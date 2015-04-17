@@ -17,7 +17,7 @@ public class Filter extends HttpServlet {
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		String sessionId = request.getSession().getId();
-		User user = User.getBySessionId(sessionId);
+		User user = User.getUserBySessionId(sessionId);
 		if (user != null) {
 			String channelId = request.getParameter("channel");
 			String filter = request.getParameter("filter");

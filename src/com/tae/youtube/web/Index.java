@@ -18,7 +18,7 @@ public class Index extends HttpServlet {
 			HttpServletResponse response) throws ServletException, IOException {
 
 		String sessionId = request.getSession().getId();
-		User user = User.getBySessionId(sessionId);
+		User user = User.getUserBySessionId(sessionId);
 		if(user==null){
 			request.getRequestDispatcher("/login").forward(request, response);
 			return;

@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,8 +29,7 @@ public class User implements Serializable {
 
 	private Map<String, YTVideo> videos;
 	private Map<String, Channel> subscriptions;
-	private String id;
-	private Date createdAt;
+	private String youtubeId;
 	private transient YouTube youtube;
 	private String name;
 	private Settings settings;
@@ -53,16 +51,21 @@ public class User implements Serializable {
 		String youtubeId = channel.getId();
 		String name = channel.getSnippet().getTitle();
 		if (youtubeId != null) {
-			user = getByYouTubeId(youtubeId);
+			user = getUserByYouTubeId(youtubeId);
 			if (user == null) {
 				user = new User();
 				user.setId(youtubeId);
 				user.setName(name);
 				User.users.put(youtubeId, user);
+				user.setYoutube(youtube);
 			}
 			sessionIdToYoutubeIdMapping.put(sessionId, youtubeId);
 		}
 		return user;
+	}
+
+	private void setYoutube(YouTube youtube) {
+		this.youtube = youtube;
 	}
 
 	public void setName(String name) {
@@ -84,35 +87,35 @@ public class User implements Serializable {
 	}
 
 	private User() {
-		createdAt = new Date();
 		subscriptions = new HashMap<>();
 		videos = new HashMap<>();
 		settings = new Settings();
 		filters = new HashMap<>();
 	}
 
-	public Collection<Channel> getSubscriptions() {
-		return subscriptions.values();
-	}
-
 	public String getId() {
-		return id;
+		return youtubeId;
 	}
 
 	public void setId(String id) {
-		this.id = id;
+		this.youtubeId = id;
 	}
 
-	public Date getCreatedAt() {
-		return createdAt;
-	}
-
-	public List<Channel> getActiveSubscriptions() {
-		List<Channel> temp = new ArrayList<>();
-		for (Channel channel : subscriptions.values())
-			if (channel.isActive())
-				temp.add(channel);
-		return temp;
+	private List<Channel> getActiveSubscriptions() throws IOException {
+		List<Channel> currentSubscriptions = getSubscriptionsFromYouTube();
+		
+		for (Channel subscription : subscriptions.values()) {
+			if (!currentSubscriptions.contains(subscription))
+				subscription.setActive(false);
+		}
+		
+		for (Channel subscription : currentSubscriptions) {
+			if (!subscriptions.containsKey(subscription.getChannelId())) {
+				subscriptions.put(subscription.getChannelId(), subscription);
+			}
+		
+		}
+		return currentSubscriptions;
 	}
 
 	public static void init() {
@@ -146,7 +149,7 @@ public class User implements Serializable {
 
 	}
 
-	private static User getByYouTubeId(String id) {
+	private static User getUserByYouTubeId(String id) {
 		if (users.containsKey(id))
 			return users.get(id);
 
@@ -196,15 +199,10 @@ public class User implements Serializable {
 		return videoList;
 	}
 
-	public List<YTVideo> getVideos(String sessionId) throws IOException {
-		getYoutube(sessionId);
-
-		updateSubscriptions(sessionId);
-
+	public List<YTVideo> getVideos() throws IOException {
 		List<Channel> activeSubscriptions = getActiveSubscriptions();
 
-		List<YTVideo> list = getVideosFromChannelList(activeSubscriptions,
-				sessionId);
+		List<YTVideo> list = getVideosFromYoutube(activeSubscriptions);
 		List<YTVideo> result = new ArrayList<>();
 		for (YTVideo video : list) {
 			if (!videos.containsKey(video.getId())) {
@@ -233,37 +231,20 @@ public class User implements Serializable {
 		Collections.sort(videos);
 	}
 
-	private void updateSubscriptions(String sessionId) throws IOException {
-		List<Channel> currentSubscriptions = getSubscriptionsFromYouTube(sessionId);
-
-		for (Channel subscription : subscriptions.values()) {
-			if (!currentSubscriptions.contains(subscription))
-				subscription.setActive(false);
-		}
-
-		for (Channel subscription : currentSubscriptions) {
-			if (!subscriptions.containsKey(subscription.getChannelId())) {
-				subscriptions.put(subscription.getChannelId(), subscription);
-			}
-
-		}
-	}
-
-	private List<YTVideo> getVideosFromChannelList(
-			Collection<Channel> channelList, String sessionId)
+	private List<YTVideo> getVideosFromYoutube(Collection<Channel> channels)
 			throws IOException {
-		List<YTVideo> videoList = new ArrayList<>();
+		List<YTVideo> videos = new ArrayList<>();
 
-		for (Channel channel : channelList) {
+		for (Channel channel : channels) {
 			List<YTVideo> list = channel.getVideos(youtube);
-			videoList.addAll(list);
+			videos.addAll(list);
 		}
 
-		Collections.sort(videoList);
-		return videoList;
+		Collections.sort(videos);
+		return videos;
 	}
 
-	private List<Channel> getSubscriptionsFromYouTube(String sessionId)
+	private List<Channel> getSubscriptionsFromYouTube()
 			throws IOException {
 
 		List<Channel> channelList = new ArrayList<>();
@@ -271,11 +252,13 @@ public class User implements Serializable {
 		String nextPageToken = "";
 
 		do {
-
 			SubscriptionListResponse subscriptionListResponse = null;
 			try {
 				subscriptionListResponse = youtube.subscriptions()
-						.list("snippet").setMine(true).setMaxResults((long) 50)
+						.list("snippet")
+						.setMine(true)
+						.setMaxResults((long) 50)
+						.setPageToken(nextPageToken)
 						.execute();
 			} catch (TokenResponseException | GoogleJsonResponseException e) {
 				// TODO Auto-generated catch block
@@ -285,18 +268,19 @@ public class User implements Serializable {
 				// response.sendRedirect("/Test/home");
 				// return;
 			}
+//			nextPageToken = subscriptionListResponse.getNextPageToken();
 			for (Subscription sub : subscriptionListResponse.getItems()) {
 				channelList.add(new Channel(sub));
 			}
-		} while (nextPageToken.length() > 0); // TODO
+		} while (nextPageToken!=null && nextPageToken.length() > 0); 
 
 		return channelList;
 	}
 
-	public static User getBySessionId(String sessionId) {
+	public static User getUserBySessionId(String sessionId) {
 		if (sessionIdToYoutubeIdMapping.containsKey(sessionId)) {
 			String youtubeId = sessionIdToYoutubeIdMapping.get(sessionId);
-			return getByYouTubeId(youtubeId);
+			return getUserByYouTubeId(youtubeId);
 		} else {
 			return null;
 		}
@@ -318,8 +302,10 @@ public class User implements Serializable {
 		Collection<Channel> list = new ArrayList<>();
 		for (String channelId : filters.keySet()) {
 			Channel channel = subscriptions.get(channelId);
-			channel.setFilters(filters.get(channelId));
-			list.add(channel);
+			if (channel.isActive()) {
+				channel.setFilters(filters.get(channelId));
+				list.add(channel);
+			}
 		}
 		return list;
 	}
@@ -337,7 +323,6 @@ public class User implements Serializable {
 			list.add(filter);
 			filters.put(channelId, list);
 		}
-
 	}
 
 }
