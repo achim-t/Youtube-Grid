@@ -217,7 +217,7 @@ public class User implements Serializable {
 		return result;
 	}
 
-	private void doFilterVideos(Collection<YTVideo> videos) {
+	private void doFilterVideos(List<YTVideo> videos) {
 		for (YTVideo video : videos) {
 			video.setFiltered(false);
 			String channelId = video.getChannelId();
@@ -230,6 +230,7 @@ public class User implements Serializable {
 				}
 			}
 		}
+		Collections.sort(videos);
 	}
 
 	private void updateSubscriptions(String sessionId) throws IOException {

@@ -1,7 +1,6 @@
 package com.tae.youtube.web;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -17,6 +16,7 @@ import com.tae.youtube.YTVideo;
 @WebServlet(urlPatterns = { "/videoList", "/refreshVideos" })
 public class Videos extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private static final int count = 10;
 
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
@@ -25,13 +25,17 @@ public class Videos extends HttpServlet {
 		List<YTVideo> videos = null;
 		if (request.getRequestURI().endsWith("videoList")) {
 			videos = user.getSavedVideos();
+			if (videos.size()>count)
+				videos = videos.subList(0, count);
+			if (videos.size()==0)
+				videos = user.getVideos(sessionId);
+			
 		}
 
 		if (request.getRequestURI().endsWith("refreshVideos")) {
 			videos = user.getVideos(sessionId);
 		}
 		if (videos != null) {
-			Collections.sort(videos);
 			String json = new Gson().toJson(videos);
 			response.setContentType("application/json");
 			response.setCharacterEncoding("UTF-8");
