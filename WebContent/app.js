@@ -1,5 +1,6 @@
 var l = Ladda.create(document.querySelector('.ladda-button'));
 var count = 0;
+$.ajaxSetup({ cache: false });
 function toggleWatched() {
 
 	if (this.checked) {
