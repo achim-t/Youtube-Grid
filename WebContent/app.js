@@ -117,6 +117,9 @@ function load(boolRefresh) {
 		}
 	}).done(function(responseJson) {
 		l.stop();
+		if (responseJson.length===0){
+			$('#btnMore').attr("disabled", "disabled")
+		}
 		$.each(responseJson, function(index, data) {
 			$video = createVideo(index, data);
 			$('.video-list').append($video);
@@ -239,6 +242,11 @@ function createVideo(index, data) {
 	return $video;
 }
 
+function reload(){
+	$('.video-list').empty();
+	count = 0;
+	load(false);
+}
 $(function() {
 	var template = Handlebars.compile($('#template').html());
 
@@ -294,6 +302,7 @@ $(function() {
 	$('#btnRefresh').on("click", refresh);
 	$('#btnMore').on("click", function() {
 		load(false)
+		$(this).blur()
 	})
 
 	load(true)
