@@ -3,6 +3,8 @@
  */
 $(function() {
 	$('#editFiltersModal').on('show.bs.modal', function(event) {
+		$('#editFiltersModal .modal-body').css('max-height',$( window ).height()*0.8);
+		$('#editFiltersModal .modal-body').css('overflow',"auto");
 		var form = $('form#editFilterForm').empty();
 		$.ajax({
 			url : './editFilters'
