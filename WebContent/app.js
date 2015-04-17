@@ -12,11 +12,9 @@ function toggleWatched() {
 		});
 		if (!$("#cbFiltered").is(":checked")) {
 			$(".watched").not(".filtered").show();
-		}
-		else {
+		} else {
 			$(".watched").show();
-		} 
-		
+		}
 	} else {
 		$.ajax({
 			url : './user',
@@ -41,11 +39,9 @@ function toggleFiltered() {
 		});
 		if (!$("#cbWatched").is(":checked")) {
 			$(".filtered").not(".watched").show();
-		}
-		else {
+		} else {
 			$(".filtered").show();
-		} 
-		
+		}
 	} else {
 		$.ajax({
 			url : './user',
@@ -111,16 +107,23 @@ function unwatched(e) {
 	});
 }
 
-function reload() {
-	$('.video-list').empty()
+function load(boolRefresh) {
+	// $('.video-list').empty()
 	l.start();
 	$.ajax({
-		url : './videoList'
+		url : './videoList',
+		data : {
+			offset : count
+		}
 	}).done(function(responseJson) {
 		l.stop();
-		responseJson.reverse();
-		$.each(responseJson, createVideo);
-		refresh();
+		$.each(responseJson, function(index, data) {
+			$video = createVideo(index, data);
+			$('.video-list').append($video);
+		});
+		if (boolRefresh) {
+			refresh();
+		}
 	});
 }
 function refresh() {
@@ -131,7 +134,10 @@ function refresh() {
 	}).done(function(responseJson) {
 		responseJson.reverse();
 		console.log("got response for refreshing videos")
-		$.each(responseJson, createVideo);
+		$.each(responseJson, function(index, data) {
+			$video = createVideo(index, data);
+			$('.video-list').prepend($video);
+		});
 		l.stop();
 	});
 }
@@ -214,7 +220,7 @@ function createVideo(index, data) {
 	}).text("by ").append($('<span>', {
 		'class' : 'channel'
 	}).text(data.channelName)));
-	$('.video-list').prepend($video);
+
 	if (data.watched) {
 		$imgcontainer.addClass("muted");
 		if (!$("#cbWatched").is(":checked")) {
@@ -230,6 +236,7 @@ function createVideo(index, data) {
 		}
 	}
 	count++;
+	return $video;
 }
 
 $(function() {
@@ -285,6 +292,9 @@ $(function() {
 	});
 
 	$('#btnRefresh').on("click", refresh);
+	$('#btnMore').on("click", function() {
+		load(false)
+	})
 
-	reload()
+	load(true)
 });

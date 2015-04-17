@@ -23,13 +23,25 @@ public class Videos extends HttpServlet {
 		String sessionId = request.getSession().getId();
 		User user = User.getBySessionId(sessionId);
 		List<YTVideo> videos = null;
+		int offset = 0;
 		if (request.getRequestURI().endsWith("videoList")) {
+			try {
+				String offsetString = request.getParameter("offset");
+				offset = Integer.parseInt(offsetString);
+			} catch (NumberFormatException e) {
+				offset = 0;
+			}
 			videos = user.getSavedVideos();
-			if (videos.size()>count)
-				videos = videos.subList(0, count);
-			if (videos.size()==0)
+			if (videos.size() == 0) // ie the user is new and has no saved
+									// videos
 				videos = user.getVideos(sessionId);
-			
+			else {
+				int start = offset < videos.size() ? offset : videos.size();
+				int end = (offset + count) < videos.size() ? offset + count
+						: videos.size();
+				videos = videos.subList(start, end);
+			}
+
 		}
 
 		if (request.getRequestURI().endsWith("refreshVideos")) {
