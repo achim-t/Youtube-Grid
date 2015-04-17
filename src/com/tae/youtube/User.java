@@ -24,9 +24,13 @@ import com.google.api.services.youtube.model.ChannelListResponse;
 import com.google.api.services.youtube.model.Subscription;
 import com.google.api.services.youtube.model.SubscriptionListResponse;
 
-@SuppressWarnings("serial")
+
 public class User implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6228474404485120672L;
 	private Map<String, YTVideo> videos;
 	private Map<String, Channel> subscriptions;
 	private String youtubeId;
@@ -110,9 +114,13 @@ public class User implements Serializable {
 		}
 		
 		for (Channel subscription : currentSubscriptions) {
-			if (!subscriptions.containsKey(subscription.getChannelId())) {
-				subscriptions.put(subscription.getChannelId(), subscription);
+			
+			String channelId = subscription.getChannelId();
+			if (!subscriptions.containsKey(channelId)) {
+				subscriptions.put(channelId, subscription);
 			}
+			else 
+				subscriptions.get(channelId).setActive(true);
 		
 		}
 		return currentSubscriptions;
@@ -199,7 +207,8 @@ public class User implements Serializable {
 		return videoList;
 	}
 
-	public List<YTVideo> getVideos() throws IOException {
+	public List<YTVideo> getVideos(String sessionId) throws IOException {
+		getYoutube(sessionId);
 		List<Channel> activeSubscriptions = getActiveSubscriptions();
 
 		List<YTVideo> list = getVideosFromYoutube(activeSubscriptions);
@@ -268,7 +277,7 @@ public class User implements Serializable {
 				// response.sendRedirect("/Test/home");
 				// return;
 			}
-//			nextPageToken = subscriptionListResponse.getNextPageToken();
+			nextPageToken = subscriptionListResponse.getNextPageToken();
 			for (Subscription sub : subscriptionListResponse.getItems()) {
 				channelList.add(new Channel(sub));
 			}

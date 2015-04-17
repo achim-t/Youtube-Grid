@@ -34,7 +34,7 @@ public class Videos extends HttpServlet {
 			videos = user.getSavedVideos();
 			if (videos.size() == 0) // ie the user is new and has no saved
 									// videos
-				videos = user.getVideos();
+				videos = user.getVideos(sessionId);
 
 			int start = offset < videos.size() ? offset : videos.size();
 			int end = (offset + count) < videos.size() ? offset + count
@@ -43,7 +43,7 @@ public class Videos extends HttpServlet {
 		}
 
 		if (request.getRequestURI().endsWith("refreshVideos")) {
-			videos = user.getVideos();
+			videos = user.getVideos(sessionId);
 		}
 		if (videos != null) {
 			String json = new Gson().toJson(videos);
