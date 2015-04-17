@@ -1,4 +1,5 @@
 var l = Ladda.create(document.querySelector('.ladda-button'));
+var count = 0;
 function toggleWatched() {
 
 	if (this.checked) {
@@ -111,7 +112,7 @@ function unwatched(e) {
 }
 
 function reload() {
-	$('.container-fluid').empty()
+	$('.video-list').empty()
 	l.start();
 	$.ajax({
 		url : './videoList'
@@ -137,7 +138,7 @@ function refresh() {
 function createVideo2(index, data) {
 	var html = template(data);
 	var $video = $('<div>').html(html);
-	$video.appendTo($('.container-fluid'));
+	$video.appendTo($('.video-list'));
 };
 
 function createVideo(index, data) {
@@ -213,7 +214,7 @@ function createVideo(index, data) {
 	}).text("by ").append($('<span>', {
 		'class' : 'channel'
 	}).text(data.channelName)));
-	$('.container-fluid').prepend($video);
+	$('.video-list').prepend($video);
 	if (data.watched) {
 		$imgcontainer.addClass("muted");
 		if (!$("#cbWatched").is(":checked")) {
@@ -228,6 +229,7 @@ function createVideo(index, data) {
 			$video.hide();
 		}
 	}
+	count++;
 }
 
 $(function() {

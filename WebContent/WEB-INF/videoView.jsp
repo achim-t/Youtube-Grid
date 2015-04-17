@@ -14,8 +14,11 @@
 <link rel="stylesheet" href="./ladda-themeless.min.css">
 </head>
 <body>
-	<div class="container-fluid"></div>
+	<div class="container-fluid">
+	<div class="video-list row"></div>
 
+	<button class="btn btn-default center-block" id="btnMore"><span>Load More</span></button>
+	</div>
 	<!-- Modal -->
 	<div class="modal fade" id="filterModal" tabindex="-1" role="dialog"
 		aria-labelledby="myModalLabel" aria-hidden="true">
