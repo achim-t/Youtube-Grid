@@ -1,4 +1,6 @@
-var l = Ladda.create(document.querySelector('.ladda-button'));
+
+var l_more = Ladda.create(document.querySelector('#btnMore'));
+var l_refresh = Ladda.create(document.querySelector('#btnRefresh'));
 var count = 0;
 $.ajaxSetup({ cache: false });
 function toggleWatched() {
@@ -109,15 +111,12 @@ function unwatched(e) {
 }
 
 function load(boolRefresh) {
-	// $('.video-list').empty()
-	l.start();
 	$.ajax({
 		url : './videoList',
 		data : {
 			offset : count
 		}
 	}).done(function(responseJson) {
-		l.stop();
 		if (responseJson.length===0){
 			$('#btnMore').attr("disabled", "disabled")
 		}
@@ -125,14 +124,17 @@ function load(boolRefresh) {
 			$video = createVideo(index, data);
 			$('.video-list').append($video);
 		});
+		l_refresh.stop()
+		l_more.stop()
 		if (boolRefresh) {
 			refresh();
 		}
+		
 	});
 }
 function refresh() {
+	l_refresh.start()
 	console.log("trying to refresh Videos")
-	l.start();
 	$.ajax({
 		url : './refreshVideos'
 	}).done(function(responseJson) {
@@ -142,7 +144,7 @@ function refresh() {
 			$video = createVideo(index, data);
 			$('.video-list').prepend($video);
 		});
-		l.stop();
+		l_refresh.stop()
 	});
 }
 function createVideo2(index, data) {
@@ -302,9 +304,10 @@ $(function() {
 
 	$('#btnRefresh').on("click", refresh);
 	$('#btnMore').on("click", function() {
+		l_more.start()
 		load(false)
 		$(this).blur()
 	})
-
+	l_refresh.start()
 	load(true)
 });

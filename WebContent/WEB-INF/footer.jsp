@@ -28,11 +28,7 @@
 		<button class="btn btn-default ladda-button"
 			data-spinner-color="#000000" id="btnRefresh" data-style="expand-left"
 			title="Refresh" data-size='1'>
-			<span class="ladda-label">
-<!-- 				<span class="glyphicon glyphicon-refresh " aria-hidden="true"></span>  -->
-				<span>Refresh</span>
-			</span>
-
+			<span class="ladda-label">Refresh</span>
 		</button>
 		<button class="btn btn-danger center" id="btnMarkAll">Mark
 			all as watched</button>

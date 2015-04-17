@@ -15,9 +15,11 @@
 </head>
 <body>
 	<div class="container-fluid">
-	<div class="video-list row"></div>
-
-	<button class="btn btn-default center-block" id="btnMore"><span>Load More</span></button>
+		<div class="video-list row"></div>
+		<button class="btn btn-default center-block ladda-button"
+			data-spinner-color="grey" data-style="expand-left" id="btnMore">
+			<span class="ladda-label">Load More</span>
+		</button>
 	</div>
 	<!-- Modal -->
 	<div class="modal fade" id="filterModal" tabindex="-1" role="dialog"
@@ -38,7 +40,7 @@
 							<input type="hidden" id="channel"> <input type="hidden"
 								id="id">
 							<div class="input-group">
-								<input type="text" class="form-control" id="filter" autofocus> 
+								<input type="text" class="form-control" id="filter" autofocus>
 								<span class="input-group-btn">
 									<button type="button" class="btn btn-primary" id="saveFilter">Save</button>
 								</span>
