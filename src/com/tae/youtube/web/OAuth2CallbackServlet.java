@@ -1,8 +1,7 @@
 package com.tae.youtube.web;
 
-
-
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -26,11 +25,19 @@ public class OAuth2CallbackServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		String code = request.getParameter("code");
-		HttpSession session = request.getSession();
-		String userId = session.getId();
-		GoogleAuthorizationCodeTokenRequest tokenRequest = Auth.getFlow().newTokenRequest(code);
-		GoogleTokenResponse tokenResponse = tokenRequest.setRedirectUri(Auth.REDIRECT_URI).execute();
-		Auth.getFlow().createAndStoreCredential(tokenResponse, userId);
-		response.sendRedirect("./login");
+		if (code != null) {
+			HttpSession session = request.getSession();
+			String userId = session.getId();
+			GoogleAuthorizationCodeTokenRequest tokenRequest = Auth.getFlow()
+					.newTokenRequest(code);
+			GoogleTokenResponse tokenResponse = tokenRequest.setRedirectUri(
+					Auth.REDIRECT_URI).execute();
+			Auth.getFlow().createAndStoreCredential(tokenResponse, userId);
+			response.sendRedirect("./login");
+		}
+		else {
+			PrintWriter writer = response.getWriter();
+			writer.write("y u no access :(");
+		}
 	}
 }
