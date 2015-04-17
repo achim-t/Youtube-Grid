@@ -21,7 +21,7 @@ public class Videos extends HttpServlet {
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		String sessionId = request.getSession().getId();
-		User user = User.getBySessionId(sessionId);
+		User user = User.getUserBySessionId(sessionId);
 		List<YTVideo> videos = null;
 		int offset = 0;
 		if (request.getRequestURI().endsWith("videoList")) {
@@ -35,13 +35,11 @@ public class Videos extends HttpServlet {
 			if (videos.size() == 0) // ie the user is new and has no saved
 									// videos
 				videos = user.getVideos(sessionId);
-			else {
-				int start = offset < videos.size() ? offset : videos.size();
-				int end = (offset + count) < videos.size() ? offset + count
-						: videos.size();
-				videos = videos.subList(start, end);
-			}
 
+			int start = offset < videos.size() ? offset : videos.size();
+			int end = (offset + count) < videos.size() ? offset + count
+					: videos.size();
+			videos = videos.subList(start, end);
 		}
 
 		if (request.getRequestURI().endsWith("refreshVideos")) {
