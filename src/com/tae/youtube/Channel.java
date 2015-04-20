@@ -90,20 +90,6 @@ public class Channel implements Serializable {
 			String id = item.getId().getVideoId();
 			ids.add(id);
 		}
-		
-//		
-//		ids = ids.substring(1);
-//		VideoListResponse videoListResponse = youtube.videos()
-//				.list("snippet,contentDetails").setId(ids).execute();
-//
-//		for (Video v : videoListResponse.getItems()) {
-//			YTVideo video = new YTVideo(v);
-//			video.setChannelName(title);
-//			list.add(video);
-//			if (video.getPublishedAt().getValue() > lastRefreshTime.getValue()) {
-//				lastRefreshTime = video.getPublishedAt();
-//			}
-//		}
 		return ids;
 	}
 }
