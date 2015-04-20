@@ -17,6 +17,14 @@ position: absolute;
 	padding: 0 3px 0 3px;
 }
 
+.video:hover .channel {
+	color: #167ac6;
+}
+
+.channel {
+	color: #767676;
+}
+
 .video:hover .img-container .video-duration {
 	display: none;
 }
@@ -41,7 +49,6 @@ position: absolute;
     border-radius: 2px;
     border-color: #333;
 }
-
 
 .watched-badge, .filtered-badge{
     position: absolute;
@@ -112,15 +119,13 @@ position: absolute;
 }
 
 .title {
-    opacity: .;
+	display: block;
 	position: relative;
 	background-color: white;
 	color: #167ac6;
     line-height: 1.3em;
+    height: 2.6em;
     overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: normal;
-    word-wrap: break-word;
     text-decoration: none;
     margin: 0;
     padding: 0;
@@ -128,15 +133,11 @@ position: absolute;
     font-size: 100%;
     font-weight: bold;
     font-family: arial, sans-serif;
-    content: initial;
     right: 0;
-    -webkit-line-clamp:2;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
 }
 
 .title:hover {
-    text-decoration: none;
+    color: #167ac6;
 }
 
 /* Sticky footer styles
