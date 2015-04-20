@@ -23,6 +23,8 @@ import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.ChannelListResponse;
 import com.google.api.services.youtube.model.Subscription;
 import com.google.api.services.youtube.model.SubscriptionListResponse;
+import com.google.api.services.youtube.model.Video;
+import com.google.api.services.youtube.model.VideoListResponse;
 
 
 public class User implements Serializable {
@@ -242,14 +244,42 @@ public class User implements Serializable {
 
 	private List<YTVideo> getVideosFromYoutube(Collection<Channel> channels)
 			throws IOException {
+		long startTime = System.currentTimeMillis();
 		List<YTVideo> videos = new ArrayList<>();
+		List<String> ids = new ArrayList<>();
 
 		for (Channel channel : channels) {
-			List<YTVideo> list = channel.getVideos(youtube);
-			videos.addAll(list);
+			List<String> list = channel.getVideos(youtube);
+			for (String id : list){
+				if (! this.videos.containsKey(id)){
+					ids.add(id);
+				}
+			}
+		}
+		
+		for (int i = 0; i * 50 < ids.size(); i++) {
+			int start = 50 * i;
+			int end = start + 50 < ids.size() ? start + 50 : ids.size();
+			List<String> subList = ids.subList(start, end);
+			String idsString = String.join(",", subList);
+			VideoListResponse videoListResponse = youtube.videos()
+					.list("snippet,contentDetails").setId(idsString).execute();
+
+			for (Video v : videoListResponse.getItems()) {
+				YTVideo video = new YTVideo(v);
+				Channel channel = getChannel(video.getChannelId());
+				video.setChannelName(channel.getTitle());
+				videos.add(video);
+				if (video.getPublishedAt().getValue() > channel
+						.getLastRefreshTime().getValue()) {
+					channel.setLastRefreshTime(video.getPublishedAt());
+				}
+			}
 		}
 
 		Collections.sort(videos);
+		long stopTime = System.currentTimeMillis();
+		System.out.println("Fetching update Videos took "+(stopTime-startTime)+"ms.");
 		return videos;
 	}
 
