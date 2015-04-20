@@ -154,19 +154,21 @@ function createVideo2(index, data) {
 };
 
 function createVideo(index, data) {
+	var url = "https://www.youtube.com/watch?v=" + data.id;
 	var $video = $('<div>', {
 		'class' : 'video',
 		'id' : data.id
 	});
 
 	var $imgcontainer = $('<div>', {
-		'class' : 'img-container'
+		'class' : 'img-container',
+		'title' : data.title
 	}).appendTo($video);
 	var $a = $('<a>', {
-		'href' : "https://www.youtube.com/watch?v=" + data.id
+		'href' : url
 	}).click(function() {
 		markWatched($video);
-		window.open($a.attr('href'));
+		window.open(url);
 		return false;
 	});
 	$a.appendTo($imgcontainer);
@@ -218,13 +220,23 @@ function createVideo(index, data) {
 			'aria-hidden' : 'true'
 		}).appendTo($filter);
 	}
-	$video.append($('<div>', {
-		'class' : 'title'
-	}).text(data.title));
+	$video.append($('<a>', {
+		'class' : 'title',
+		'href' : url,
+		'title' : data.title
+	}).text(data.title).click(function() {
+		markWatched($video);
+		window.open(url);
+		return false;
+	}));
 	$video.append($('<div>', {
 		'class' : 'byline'
-	}).text("by ").append($('<span>', {
-		'class' : 'channel'
+	}).text("by ").append($('<a>', {
+		'class' : 'channel',
+		'href' : 'https://www.youtube.com/channel/'+data.channelId
+	}).click(function(event) {
+		window.open('https://www.youtube.com/channel/'+data.channelId);
+		return false;
 	}).text(data.channelName)));
 
 	if (data.watched) {
@@ -282,7 +294,9 @@ $(function() {
 		$('#filter').focus()
 		$('#filter').select()
 	})
-	$('#saveFilter').on('click', function(event) {
+	$('#filter-add-form').on('submit', function(event) {
+		
+		console.log($('#filter').val)
 		$.ajax({
 			url : './filter',
 			type : 'POST',

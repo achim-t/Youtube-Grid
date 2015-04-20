@@ -12,8 +12,6 @@ import com.google.api.services.youtube.model.SearchListResponse;
 import com.google.api.services.youtube.model.SearchResult;
 import com.google.api.services.youtube.model.Subscription;
 import com.google.api.services.youtube.model.SubscriptionSnippet;
-import com.google.api.services.youtube.model.Video;
-import com.google.api.services.youtube.model.VideoListResponse;
 
 @SuppressWarnings("serial")
 public class Channel implements Serializable {
@@ -24,6 +22,14 @@ public class Channel implements Serializable {
 	private boolean isActive = true;
 	private List<String> filters;
 	private DateTime lastRefreshTime;
+
+	public DateTime getLastRefreshTime() {
+		return lastRefreshTime;
+	}
+
+	public void setLastRefreshTime(DateTime lastRefreshTime) {
+		this.lastRefreshTime = lastRefreshTime;
+	}
 
 	public Channel(Subscription sub) {
 		SubscriptionSnippet snippet = sub.getSnippet();
@@ -72,10 +78,8 @@ public class Channel implements Serializable {
 		filters.addAll(collection);
 	}
 
-	public List<YTVideo> getVideos(YouTube youtube) throws IOException {
-		List<YTVideo> list = new ArrayList<>();
-
-		String ids = "";
+	public List<String> getVideos(YouTube youtube) throws IOException {
+		List<String> ids = new ArrayList<>();
 		com.google.api.services.youtube.YouTube.Search.List searchList = youtube
 				.search().list("id").setChannelId(channelId).setOrder("date")
 				.setType("video").setMaxResults(50L)
@@ -84,20 +88,8 @@ public class Channel implements Serializable {
 		SearchListResponse listResponse = searchList.execute();
 		for (SearchResult item : listResponse.getItems()) {
 			String id = item.getId().getVideoId();
-			ids += "," + id;
+			ids.add(id);
 		}
-		ids = ids.substring(1);
-		VideoListResponse videoListResponse = youtube.videos()
-				.list("snippet,contentDetails").setId(ids).execute();
-
-		for (Video v : videoListResponse.getItems()) {
-			YTVideo video = new YTVideo(v);
-			video.setChannelName(title);
-			list.add(video);
-			if (video.getPublishedAt().getValue() > lastRefreshTime.getValue()) {
-				lastRefreshTime = video.getPublishedAt();
-			}
-		}
-		return list;
+		return ids;
 	}
 }

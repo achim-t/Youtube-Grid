@@ -13,6 +13,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.auth.oauth2.TokenResponseException;
@@ -23,6 +28,10 @@ import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.ChannelListResponse;
 import com.google.api.services.youtube.model.Subscription;
 import com.google.api.services.youtube.model.SubscriptionListResponse;
+import com.google.api.services.youtube.model.Video;
+import com.google.api.services.youtube.model.VideoListResponse;
+
+
 
 
 public class User implements Serializable {
@@ -42,6 +51,7 @@ public class User implements Serializable {
 	private static Map<String, User> users;
 	private static DataStore<User> userDataStore;
 	private static Map<String, String> sessionIdToYoutubeIdMapping = new HashMap<>();
+	private static ExecutorService executor;
 
 	public static User createUser(Credential credential, String sessionId)
 			throws IOException {
@@ -129,7 +139,8 @@ public class User implements Serializable {
 	public static void init() {
 		if (users != null)
 			return;
-
+		int numThreads = 50;
+		executor = Executors.newFixedThreadPool(numThreads);
 		FileDataStoreFactory fileDataStoreFactory;
 		try {
 			fileDataStoreFactory = new FileDataStoreFactory(new File(
@@ -198,6 +209,7 @@ public class User implements Serializable {
 		} catch (IOException i) {
 			i.printStackTrace();
 		}
+		executor.shutdown();
 	}
 
 	public List<YTVideo> getSavedVideos() {
@@ -242,16 +254,64 @@ public class User implements Serializable {
 
 	private List<YTVideo> getVideosFromYoutube(Collection<Channel> channels)
 			throws IOException {
+		long startTime = System.currentTimeMillis();
 		List<YTVideo> videos = new ArrayList<>();
+		List<String> ids = getIds(channels);
+		
+		for (int i = 0; i * 50 < ids.size(); i++) {
+			int start = 50 * i;
+			int end = start + 50 < ids.size() ? start + 50 : ids.size();
+			List<String> subList = ids.subList(start, end);
+			String idsString = String.join(",", subList);
+			VideoListResponse videoListResponse = youtube.videos()
+					.list("snippet,contentDetails").setId(idsString).execute();
 
-		for (Channel channel : channels) {
-			List<YTVideo> list = channel.getVideos(youtube);
-			videos.addAll(list);
+			for (Video v : videoListResponse.getItems()) {
+				YTVideo video = new YTVideo(v);
+				Channel channel = getChannel(video.getChannelId());
+				video.setChannelName(channel.getTitle());
+				videos.add(video);
+				if (video.getPublishedAt().getValue() > channel
+						.getLastRefreshTime().getValue()) {
+					channel.setLastRefreshTime(video.getPublishedAt());
+				}
+			}
 		}
 
 		Collections.sort(videos);
+		long stopTime = System.currentTimeMillis();
+		System.out.println("Fetching update Videos took "+(stopTime-startTime)+"ms.");
 		return videos;
 	}
+
+	private List<String> getIds(Collection<Channel> channels)
+			throws IOException {
+		List<String> ids = new ArrayList<>();
+		Collection<Callable<List<String>>> tasks = new ArrayList<>();
+		for (Channel channel : channels) {
+			tasks.add(new GetVideosTask(channel));
+		}
+		
+		try {
+			List<Future<List<String>>> results = executor.invokeAll(tasks);
+			for (Future<List<String>> result : results) {
+				for (String id : result.get()) {
+					if (!this.videos.containsKey(id)) {
+						ids.add(id);
+					}
+				}
+			}
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return ids;
+	}
+	
 
 	private List<Channel> getSubscriptionsFromYouTube()
 			throws IOException {
@@ -332,6 +392,19 @@ public class User implements Serializable {
 			list.add(filter);
 			filters.put(channelId, list);
 		}
+	}
+	
+	private final class GetVideosTask implements Callable<List<String>>{
+		private final Channel channel;
+		GetVideosTask(Channel channel){
+			this.channel = channel;
+		}
+		@Override
+		public List<String> call() throws Exception {
+			
+			return channel.getVideos(youtube);
+		}
+		
 	}
 
 }

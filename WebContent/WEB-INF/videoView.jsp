@@ -10,8 +10,8 @@
 
 <link rel="stylesheet"
 	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-<link rel="stylesheet" href="./style.css">
-<link rel="stylesheet" href="./ladda-themeless.min.css">
+<link rel="stylesheet" href="./css/style.css">
+<link rel="stylesheet" href="./css/ladda-themeless.min.css">
 </head>
 <body>
 	<div class="container-fluid">
@@ -34,7 +34,7 @@
 					<h4 class="modal-title" id="myModalLabel">Modal title</h4>
 				</div>
 				<div class="modal-body">
-					<form>
+					<form id="filter-add-form">
 						<div class="form-group">
 
 							<input type="hidden" id="channel"> <input type="hidden"
@@ -42,7 +42,7 @@
 							<div class="input-group">
 								<input type="text" class="form-control" id="filter" autofocus>
 								<span class="input-group-btn">
-									<button type="button" class="btn btn-primary" id="saveFilter">Save</button>
+									<input type="submit" class="btn btn-primary" id="saveFilter" value="Save">
 								</span>
 							</div>
 						</div>
@@ -79,10 +79,10 @@
 	<script src="https://code.jquery.com/jquery-git2.min.js"></script>
 	<script
 		src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-	<script src="./spin.min.js"></script>
-	<script src="./ladda.min.js"></script>
-	<script src="./app.js"></script>
-	<script src="./filters.js"></script>
+	<script src="./js/spin.min.js"></script>
+	<script src="./js/ladda.min.js"></script>
+	<script src="./js/app.js"></script>
+	<script src="./js/filters.js"></script>
 
 </body>
 </html>
