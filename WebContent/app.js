@@ -154,6 +154,7 @@ function createVideo2(index, data) {
 };
 
 function createVideo(index, data) {
+	var url = "https://www.youtube.com/watch?v=" + data.id;
 	var $video = $('<div>', {
 		'class' : 'video',
 		'id' : data.id
@@ -163,7 +164,7 @@ function createVideo(index, data) {
 		'class' : 'img-container'
 	}).appendTo($video);
 	var $a = $('<a>', {
-		'href' : "https://www.youtube.com/watch?v=" + data.id
+		'href' : url
 	}).click(function() {
 		markWatched($video);
 		window.open($a.attr('href'));
@@ -218,8 +219,10 @@ function createVideo(index, data) {
 			'aria-hidden' : 'true'
 		}).appendTo($filter);
 	}
-	$video.append($('<div>', {
-		'class' : 'title'
+	$video.append($('<a>', {
+		'class' : 'title',
+		'href' : url,
+		'title' : data.title
 	}).text(data.title));
 	$video.append($('<div>', {
 		'class' : 'byline'
