@@ -18,6 +18,6 @@
 	<script src="https://code.jquery.com/jquery-git2.min.js"></script>
 	<script
 		src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-	<script src="./filters.js"></script>
+	<script src="./js/filters.js"></script>
 </body>
 </html>

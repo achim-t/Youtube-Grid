@@ -10,8 +10,8 @@
 
 <link rel="stylesheet"
 	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-<link rel="stylesheet" href="./style.css">
-<link rel="stylesheet" href="./ladda-themeless.min.css">
+<link rel="stylesheet" href="./css/style.css">
+<link rel="stylesheet" href="./css/ladda-themeless.min.css">
 </head>
 <body>
 	<div class="container-fluid">
@@ -79,10 +79,10 @@
 	<script src="https://code.jquery.com/jquery-git2.min.js"></script>
 	<script
 		src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-	<script src="./spin.min.js"></script>
-	<script src="./ladda.min.js"></script>
-	<script src="./app.js"></script>
-	<script src="./filters.js"></script>
+	<script src="./js/spin.min.js"></script>
+	<script src="./js/ladda.min.js"></script>
+	<script src="./js/app.js"></script>
+	<script src="./js/filters.js"></script>
 
 </body>
 </html>
