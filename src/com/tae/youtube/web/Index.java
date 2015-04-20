@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.tae.youtube.User;
 
-@WebServlet(urlPatterns = {"/index","/"})
+@WebServlet(urlPatterns = {"/index"})
 public class Index extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
