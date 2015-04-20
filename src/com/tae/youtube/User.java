@@ -139,7 +139,7 @@ public class User implements Serializable {
 	public static void init() {
 		if (users != null)
 			return;
-		int numThreads = 4;
+		int numThreads = 50;
 		executor = Executors.newFixedThreadPool(numThreads);
 		FileDataStoreFactory fileDataStoreFactory;
 		try {
