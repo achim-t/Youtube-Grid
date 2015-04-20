@@ -294,7 +294,9 @@ $(function() {
 		$('#filter').focus()
 		$('#filter').select()
 	})
-	$('#saveFilter').on('click', function(event) {
+	$('#filter-add-form').on('submit', function(event) {
+		
+		console.log($('#filter').val)
 		$.ajax({
 			url : './filter',
 			type : 'POST',

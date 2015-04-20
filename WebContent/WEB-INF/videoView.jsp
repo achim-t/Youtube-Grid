@@ -34,7 +34,7 @@
 					<h4 class="modal-title" id="myModalLabel">Modal title</h4>
 				</div>
 				<div class="modal-body">
-					<form>
+					<form id="filter-add-form">
 						<div class="form-group">
 
 							<input type="hidden" id="channel"> <input type="hidden"
@@ -42,7 +42,7 @@
 							<div class="input-group">
 								<input type="text" class="form-control" id="filter" autofocus>
 								<span class="input-group-btn">
-									<button type="button" class="btn btn-primary" id="saveFilter">Save</button>
+									<input type="submit" class="btn btn-primary" id="saveFilter" value="Save">
 								</span>
 							</div>
 						</div>
