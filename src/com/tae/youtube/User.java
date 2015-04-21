@@ -1,12 +1,10 @@
 package com.tae.youtube;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -19,11 +17,16 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import javax.persistence.Entity;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Id;
+import javax.persistence.Persistence;
+import javax.persistence.Transient;
+
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.auth.oauth2.TokenResponseException;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
-import com.google.api.client.util.store.DataStore;
-import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.ChannelListResponse;
 import com.google.api.services.youtube.model.Subscription;
@@ -33,25 +36,24 @@ import com.google.api.services.youtube.model.VideoListResponse;
 
 
 
-
-public class User implements Serializable {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -6228474404485120672L;
+@Entity
+public class User {
+	@Transient //TODO
 	private Map<String, YTVideo> videos;
+	@Transient //TODO
 	private Map<String, Channel> subscriptions;
+	@Id
 	private String youtubeId;
+	@Transient
 	private transient YouTube youtube;
 	private String name;
+	@Transient //TODO
 	private Settings settings;
 	private Map<String, Collection<String>> filters;
 
-	private static Map<String, User> users;
-	private static DataStore<User> userDataStore;
 	private static Map<String, String> sessionIdToYoutubeIdMapping = new HashMap<>();
 	private static ExecutorService executor;
+	private static EntityManagerFactory factory;
 
 	public static User createUser(Credential credential, String sessionId)
 			throws IOException {
@@ -67,11 +69,17 @@ public class User implements Serializable {
 		if (youtubeId != null) {
 			user = getUserByYouTubeId(youtubeId);
 			if (user == null) {
+				System.out.println(youtubeId);
 				user = new User();
 				user.setId(youtubeId);
 				user.setName(name);
-				User.users.put(youtubeId, user);
+//				User.users.put(youtubeId, user); //TODO save user
+				EntityManager em = factory.createEntityManager();
+				em.getTransaction().begin();
+				em.persist(user);
 				user.setYoutube(youtube);
+				em.getTransaction().commit();
+				em.close();
 			}
 			sessionIdToYoutubeIdMapping.put(sessionId, youtubeId);
 		}
@@ -137,20 +145,9 @@ public class User implements Serializable {
 	}
 
 	public static void init() {
-		if (users != null)
-			return;
+		factory = Persistence.createEntityManagerFactory("default");
 		int numThreads = 50;
 		executor = Executors.newFixedThreadPool(numThreads);
-		FileDataStoreFactory fileDataStoreFactory;
-		try {
-			fileDataStoreFactory = new FileDataStoreFactory(new File(
-					System.getProperty("user.home") + "/" + "local_data"));
-			userDataStore = fileDataStoreFactory.getDataStore("users");
-
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		try {
 			FileInputStream fileIn = new FileInputStream(
 					System.getProperty("user.home") + "/" + "local_data" + "/"
@@ -164,39 +161,20 @@ public class User implements Serializable {
 		} catch (Exception i) {
 			sessionIdToYoutubeIdMapping = new HashMap<>();
 		}
-		users = new HashMap<>();
-
 	}
 
 	private static User getUserByYouTubeId(String id) {
-		if (users.containsKey(id))
-			return users.get(id);
-
 		User user = null;
-
-		try {
-			if (userDataStore.containsKey(id))
-				user = userDataStore.get(id);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-
-			e.printStackTrace();
-		}
-		if (user != null)
-			users.put(id, user);
+		EntityManager em = factory.createEntityManager();
+		user = (User) em.createQuery("select u from User u where u.youtubeId=:id").setParameter("id", id).getSingleResult();
+		//TODO get from H2
+		em.close();
 		return user;
 	}
 
 	public static void save() {
-		for (User user : users.values()) {
-			try {
-				userDataStore.set(user.getId(), user);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
+		
+		//TODO save to H2 ???
 		try {
 			FileOutputStream fileOut = new FileOutputStream(
 					System.getProperty("user.home") + "/" + "local_data" + "/"
