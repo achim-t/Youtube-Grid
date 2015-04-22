@@ -9,25 +9,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.Persistence;
 import javax.persistence.Transient;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.auth.oauth2.TokenResponseException;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.services.youtube.YouTube;
-import com.google.api.services.youtube.model.ChannelListResponse;
 import com.google.api.services.youtube.model.Subscription;
 import com.google.api.services.youtube.model.SubscriptionListResponse;
 import com.google.api.services.youtube.model.Video;
@@ -128,6 +123,11 @@ public class User {
 
 		}
 		doFilterVideos(result);
+		EntityManager em = Application.getFactory().createEntityManager();
+		em.getTransaction().begin();
+		em.merge(this);
+		em.getTransaction().commit();
+		em.close();
 		return result;
 	}
 
@@ -149,7 +149,6 @@ public class User {
 
 	private List<YTVideo> getVideosFromYoutube(Collection<Channel> channels)
 			throws IOException {
-		long startTime = System.currentTimeMillis();
 		List<YTVideo> videos = new ArrayList<>();
 		List<String> ids = getIds(channels);
 		
@@ -174,8 +173,6 @@ public class User {
 		}
 
 		Collections.sort(videos);
-		long stopTime = System.currentTimeMillis();
-		System.out.println("Fetching update Videos took "+(stopTime-startTime)+"ms.");
 		return videos;
 	}
 
