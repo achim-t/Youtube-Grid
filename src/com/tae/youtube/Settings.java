@@ -1,9 +1,15 @@
 package com.tae.youtube;
 
-import java.io.Serializable;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
-public class Settings implements Serializable {
-	
+@Entity
+public class Settings  {
+	@Id
+	@GeneratedValue
+	private int id;
+
 	private boolean watched=false;
 	private boolean filtered=false;
 	public boolean isWatched(){

@@ -1,15 +1,17 @@
 package com.tae.youtube;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.regex.Pattern;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
 import com.google.api.client.util.DateTime;
 import com.google.api.services.youtube.model.Video;
 import com.google.api.services.youtube.model.VideoSnippet;
 
-@SuppressWarnings("serial")
-public class YTVideo implements Comparable<YTVideo>, Serializable {
+@Entity
+public class YTVideo implements Comparable<YTVideo> {
 	private static String regex2two = "(?<=[^\\d])(\\d)(?=[^\\d])";
 	private static HashMap<String, String> regexMap = null;
 	private static String two = "0$1";
@@ -44,6 +46,7 @@ public class YTVideo implements Comparable<YTVideo>, Serializable {
 		return null;
 	}
 
+	
 	private String channelId;
 	private String channelName;
 	public String getChannelName() {
@@ -57,7 +60,11 @@ public class YTVideo implements Comparable<YTVideo>, Serializable {
 	private String duration;
 	private boolean filtered = false;
 
+	@Id
 	private String id;
+	public YTVideo() {
+	}
+
 	private DateTime publishedAt;
 	private String thumbnailUrl;
 	private String title;

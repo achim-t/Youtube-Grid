@@ -1,10 +1,6 @@
 package com.tae.youtube;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -17,10 +13,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Persistence;
 import javax.persistence.Transient;
 
@@ -38,22 +37,27 @@ import com.google.api.services.youtube.model.VideoListResponse;
 
 @Entity
 public class User {
-	@Transient //TODO
-	private Map<String, YTVideo> videos;
-	@Transient //TODO
-	private Map<String, Channel> subscriptions;
+	@OneToMany(cascade=CascadeType.ALL)
+	private Map<String, YTVideo> videos= new HashMap<>();
+	@OneToMany(cascade=CascadeType.ALL)
+	private Map<String, Channel> subscriptions=new HashMap<>();;
 	@Id
 	private String youtubeId;
 	@Transient
 	private transient YouTube youtube;
 	private String name;
-	@Transient //TODO
-	private Settings settings;
-	private Map<String, Collection<String>> filters;
-
+	@OneToOne(cascade = CascadeType.ALL)
+	private Settings settings = new Settings();
+	private Map<String, Collection<String>> filters= new HashMap<>();
+	private static Map<String, User> users;
 	private static Map<String, String> sessionIdToYoutubeIdMapping = new HashMap<>();
 	private static ExecutorService executor;
 	private static EntityManagerFactory factory;
+	
+
+	public static EntityManagerFactory getFactory() {
+		return factory;
+	}
 
 	public static User createUser(Credential credential, String sessionId)
 			throws IOException {
@@ -71,12 +75,15 @@ public class User {
 			if (user == null) {
 				System.out.println(youtubeId);
 				user = new User();
+				
+				
 				user.setId(youtubeId);
 				user.setName(name);
 //				User.users.put(youtubeId, user); //TODO save user
 				EntityManager em = factory.createEntityManager();
 				em.getTransaction().begin();
 				em.persist(user);
+//				em.persist(user.getSettings());
 				user.setYoutube(youtube);
 				em.getTransaction().commit();
 				em.close();
@@ -106,13 +113,6 @@ public class User {
 					Auth.JSON_FACTORY, credential).build();
 		}
 		return youtube;
-	}
-
-	private User() {
-		subscriptions = new HashMap<>();
-		videos = new HashMap<>();
-		settings = new Settings();
-		filters = new HashMap<>();
 	}
 
 	public String getId() {
@@ -148,46 +148,40 @@ public class User {
 		factory = Persistence.createEntityManagerFactory("default");
 		int numThreads = 50;
 		executor = Executors.newFixedThreadPool(numThreads);
-		try {
-			FileInputStream fileIn = new FileInputStream(
-					System.getProperty("user.home") + "/" + "local_data" + "/"
-							+ "user.map");
-			ObjectInputStream in = new ObjectInputStream(fileIn);
-
-			sessionIdToYoutubeIdMapping = (Map<String, String>) in.readObject();
-
-			in.close();
-			fileIn.close();
-		} catch (Exception i) {
-			sessionIdToYoutubeIdMapping = new HashMap<>();
-		}
+		sessionIdToYoutubeIdMapping = new HashMap<>();
+		users = new HashMap<>();
 	}
 
 	private static User getUserByYouTubeId(String id) {
+		if (users.containsKey(id))
+			return users.get(id);
+		
 		User user = null;
 		EntityManager em = factory.createEntityManager();
-		user = (User) em.createQuery("select u from User u where u.youtubeId=:id").setParameter("id", id).getSingleResult();
+		try {
+			user = em.find(User.class, id);
+		} catch (Exception e) {
+//			 TODO Auto-generated catch block
+//			e.printStackTrace();
+			System.out.println(e.getMessage());
+		}
 		//TODO get from H2
 		em.close();
+		if (user != null)
+			users.put(id, user);
 		return user;
 	}
 
 	public static void save() {
-		
-		//TODO save to H2 ???
-		try {
-			FileOutputStream fileOut = new FileOutputStream(
-					System.getProperty("user.home") + "/" + "local_data" + "/"
-							+ "user.map");
-			ObjectOutputStream out = new ObjectOutputStream(fileOut);
-			out.writeObject(sessionIdToYoutubeIdMapping);
-			out.close();
-			fileOut.close();
-
-		} catch (IOException i) {
-			i.printStackTrace();
+		EntityManager em = factory.createEntityManager();
+		em.getTransaction().begin();
+		for (User user : users.values()) {
+			em.merge(user);
 		}
-		executor.shutdown();
+		em.getTransaction().commit();
+		em.close();
+		factory.close();
+		executor.shutdownNow();
 	}
 
 	public List<YTVideo> getSavedVideos() {
@@ -348,7 +342,7 @@ public class User {
 	public Collection<Channel> getFilters() {
 		Collection<Channel> list = new ArrayList<>();
 		for (String channelId : filters.keySet()) {
-			Channel channel = subscriptions.get(channelId);
+			Channel channel = subscriptions.get(channelId);//TODO channel can be null
 			if (channel.isActive()) {
 				channel.setFilters(filters.get(channelId));
 				list.add(channel);

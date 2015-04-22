@@ -1,10 +1,12 @@
 package com.tae.youtube;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
 import com.google.api.client.util.DateTime;
 import com.google.api.services.youtube.YouTube;
@@ -13,12 +15,17 @@ import com.google.api.services.youtube.model.SearchResult;
 import com.google.api.services.youtube.model.Subscription;
 import com.google.api.services.youtube.model.SubscriptionSnippet;
 
-@SuppressWarnings("serial")
-public class Channel implements Serializable {
+@Entity
+public class Channel {
 
 	private String thumbnailUrl;
 	private String title;
+	@Id
 	private String channelId;
+	public Channel() {
+		super();
+	}
+
 	private boolean isActive = true;
 	private List<String> filters;
 	private DateTime lastRefreshTime;
