@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -14,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
+import com.tae.youtube.Application;
 import com.tae.youtube.Channel;
 import com.tae.youtube.User;
 
@@ -27,7 +27,7 @@ public class EditFilters extends HttpServlet {
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		String sessionId = request.getSession().getId();
-		User user = User.getUserBySessionId(sessionId);
+		User user = Application.getUserBySessionId(sessionId);
 		Collection<Channel> allFilters = user.getFilters();
 
 		String json = new Gson().toJson(allFilters);
@@ -43,7 +43,7 @@ public class EditFilters extends HttpServlet {
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		String sessionId = request.getSession().getId();
-		User user = User.getUserBySessionId(sessionId);
+		User user = Application.getUserBySessionId(sessionId);
 		BufferedReader br = new BufferedReader(new InputStreamReader(
 				request.getInputStream()));
 		String json = null;

@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.tae.youtube.Application;
 import com.tae.youtube.User;
 import com.tae.youtube.YTVideo;
 
@@ -34,7 +35,7 @@ public class VideoServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		String sessionId = request.getSession().getId();
-		User user = User.getUserBySessionId(sessionId);
+		User user = Application.getUserBySessionId(sessionId);
 		if (user != null) {
 			String videoId = request.getParameter("id");
 			YTVideo video = user.getVideo(videoId);

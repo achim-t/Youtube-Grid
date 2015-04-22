@@ -49,51 +49,12 @@ public class User {
 	@OneToOne(cascade = CascadeType.ALL)
 	private Settings settings = new Settings();
 	private Map<String, Collection<String>> filters= new HashMap<>();
-	private static Map<String, User> users;
-	private static Map<String, String> sessionIdToYoutubeIdMapping = new HashMap<>();
-	private static ExecutorService executor;
-	private static EntityManagerFactory factory;
+	
 	
 
-	public static EntityManagerFactory getFactory() {
-		return factory;
-	}
+	
 
-	public static User createUser(Credential credential, String sessionId)
-			throws IOException {
-		User user = null;
-		YouTube youtube = new YouTube.Builder(Auth.HTTP_TRANSPORT,
-				Auth.JSON_FACTORY, credential).build();
-		ChannelListResponse list = youtube.channels().list("snippet")
-				.setMine(true).execute();
-		com.google.api.services.youtube.model.Channel channel = list.getItems()
-				.get(0);
-		String youtubeId = channel.getId();
-		String name = channel.getSnippet().getTitle();
-		if (youtubeId != null) {
-			user = getUserByYouTubeId(youtubeId);
-			if (user == null) {
-				System.out.println(youtubeId);
-				user = new User();
-				
-				
-				user.setId(youtubeId);
-				user.setName(name);
-//				User.users.put(youtubeId, user); //TODO save user
-				EntityManager em = factory.createEntityManager();
-				em.getTransaction().begin();
-				em.persist(user);
-//				em.persist(user.getSettings());
-				user.setYoutube(youtube);
-				em.getTransaction().commit();
-				em.close();
-			}
-			sessionIdToYoutubeIdMapping.put(sessionId, youtubeId);
-		}
-		return user;
-	}
-
-	private void setYoutube(YouTube youtube) {
+	public void setYoutube(YouTube youtube) {
 		this.youtube = youtube;
 	}
 
@@ -144,45 +105,7 @@ public class User {
 		return currentSubscriptions;
 	}
 
-	public static void init() {
-		factory = Persistence.createEntityManagerFactory("default");
-		int numThreads = 50;
-		executor = Executors.newFixedThreadPool(numThreads);
-		sessionIdToYoutubeIdMapping = new HashMap<>();
-		users = new HashMap<>();
-	}
-
-	private static User getUserByYouTubeId(String id) {
-		if (users.containsKey(id))
-			return users.get(id);
-		
-		User user = null;
-		EntityManager em = factory.createEntityManager();
-		try {
-			user = em.find(User.class, id);
-		} catch (Exception e) {
-//			 TODO Auto-generated catch block
-//			e.printStackTrace();
-			System.out.println(e.getMessage());
-		}
-		//TODO get from H2
-		em.close();
-		if (user != null)
-			users.put(id, user);
-		return user;
-	}
-
-	public static void save() {
-		EntityManager em = factory.createEntityManager();
-		em.getTransaction().begin();
-		for (User user : users.values()) {
-			em.merge(user);
-		}
-		em.getTransaction().commit();
-		em.close();
-		factory.close();
-		executor.shutdownNow();
-	}
+	
 
 	public List<YTVideo> getSavedVideos() {
 		List<YTVideo> videoList = new ArrayList<>();
@@ -265,7 +188,7 @@ public class User {
 		}
 		
 		try {
-			List<Future<List<String>>> results = executor.invokeAll(tasks);
+			List<Future<List<String>>> results = Application.getExecutor().invokeAll(tasks);
 			for (Future<List<String>> result : results) {
 				for (String id : result.get()) {
 					if (!this.videos.containsKey(id)) {
@@ -318,14 +241,7 @@ public class User {
 		return channelList;
 	}
 
-	public static User getUserBySessionId(String sessionId) {
-		if (sessionIdToYoutubeIdMapping.containsKey(sessionId)) {
-			String youtubeId = sessionIdToYoutubeIdMapping.get(sessionId);
-			return getUserByYouTubeId(youtubeId);
-		} else {
-			return null;
-		}
-	}
+	
 
 	public YTVideo getVideo(String videoId) {
 		return videos.get(videoId);

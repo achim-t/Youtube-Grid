@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
+import com.tae.youtube.Application;
 import com.tae.youtube.User;
 import com.tae.youtube.YTVideo;
 
@@ -21,7 +22,7 @@ public class Videos extends HttpServlet {
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		String sessionId = request.getSession().getId();
-		User user = User.getUserBySessionId(sessionId);
+		User user = Application.getUserBySessionId(sessionId);
 		List<YTVideo> videos = null;
 		int offset = 0;
 		if (request.getRequestURI().endsWith("videoList")) {

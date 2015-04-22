@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.api.client.auth.oauth2.Credential;
+import com.tae.youtube.Application;
 import com.tae.youtube.Auth;
 import com.tae.youtube.User;
 
@@ -21,7 +22,7 @@ public class Login extends HttpServlet {
 			throws ServletException, IOException {
 		String sessionId = req.getSession().getId();
 
-		User user = User.getUserBySessionId(sessionId);
+		User user = Application.getUserBySessionId(sessionId);
 		if (user == null) {
 			Credential credential = Auth.getCredential(sessionId);
 			if (credential == null) {
@@ -31,7 +32,7 @@ public class Login extends HttpServlet {
 			}
 
 			else {
-				user = User.createUser(credential, sessionId);
+				user = Application.createUser(credential, sessionId);
 			}
 		}
 		resp.sendRedirect("./index");

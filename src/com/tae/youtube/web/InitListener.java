@@ -4,7 +4,7 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
-import com.tae.youtube.User;
+import com.tae.youtube.Application;
 
 @WebListener
 public class InitListener implements ServletContextListener {
@@ -14,11 +14,11 @@ public class InitListener implements ServletContextListener {
 
 	@Override
 	public void contextDestroyed(ServletContextEvent event) {
-		User.save();
+		Application.save();
 	}
 
 	@Override
 	public void contextInitialized(ServletContextEvent event) {
-		User.init();
+		Application.init();
 	}
 }

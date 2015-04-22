@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.tae.youtube.Application;
 import com.tae.youtube.User;
 
 @WebServlet(urlPatterns = {"/index"})
@@ -18,7 +19,7 @@ public class Index extends HttpServlet {
 			HttpServletResponse response) throws ServletException, IOException {
 
 		String sessionId = request.getSession().getId();
-		User user = User.getUserBySessionId(sessionId);
+		User user = Application.getUserBySessionId(sessionId);
 		if(user==null){
 			request.getRequestDispatcher("/login").forward(request, response);
 			return;
