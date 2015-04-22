@@ -61,7 +61,7 @@ function markAs(video, state) {
 	video.addClass(state);
 	var $imgcontainer = $(".img-container", video);
 	$imgcontainer.addClass("muted");
-	$imgcontainer.append($('<div class="watched-badge">' + state.toUpperCase()
+	$imgcontainer.append($('<div class="'+state+'-badge">' + state.toUpperCase()
 			+ '</div>'));
 }
 function markWatched(video) {
@@ -295,8 +295,7 @@ $(function() {
 		$('#filter').select()
 	})
 	$('#filter-add-form').on('submit', function(event) {
-		
-		console.log($('#filter').val)
+		event.preventDefault()
 		$.ajax({
 			url : './filter',
 			type : 'POST',
@@ -306,7 +305,13 @@ $(function() {
 			}
 		});
 		$('#filterModal').modal('hide');
-		reload()
+		var id = $('#id').val()
+		var video = $('.video#'+id)
+		if (!$("#cbFiltered").is(":checked")) {
+
+			video.hide("fast");
+		}
+		markAs(video, 'filtered');
 	});
 	$("#cbWatched").on("change", toggleWatched);
 	$("#cbFiltered").on("change", toggleFiltered);
