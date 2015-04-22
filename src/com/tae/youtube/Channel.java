@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.List;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 import com.google.api.client.util.DateTime;
@@ -21,6 +22,8 @@ public class Channel {
 	private String thumbnailUrl;
 	private String title;
 	@Id
+	@GeneratedValue
+	private long id;
 	private String channelId;
 	public Channel() {
 		super();

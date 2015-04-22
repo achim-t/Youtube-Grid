@@ -154,10 +154,10 @@ function createVideo2(index, data) {
 };
 
 function createVideo(index, data) {
-	var url = "https://www.youtube.com/watch?v=" + data.id;
+	var url = "https://www.youtube.com/watch?v=" + data.videoId;
 	var $video = $('<div>', {
 		'class' : 'video',
-		'id' : data.id
+		'id' : data.videoId
 	});
 
 	var $imgcontainer = $('<div>', {
@@ -212,7 +212,7 @@ function createVideo(index, data) {
 			'data-title' : data.title,
 			'data-channel' : data.channelId,
 			'data-channelname' : data.channelName,
-			'data-id' : data.id,
+			'data-id' : data.videoId,
 			'title' : 'Filter Videos like this'
 		}).appendTo($imgcontainer);
 		$('<span>', {

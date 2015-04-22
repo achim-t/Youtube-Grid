@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.regex.Pattern;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 import com.google.api.client.util.DateTime;
@@ -61,7 +62,10 @@ public class YTVideo implements Comparable<YTVideo> {
 	private boolean filtered = false;
 
 	@Id
-	private String id;
+	@GeneratedValue
+	private long id;
+	
+	private String videoId;
 	public YTVideo() {
 	}
 
@@ -72,7 +76,7 @@ public class YTVideo implements Comparable<YTVideo> {
 	private boolean watched = false;
 
 	public YTVideo(Video video) {
-		id = video.getId();
+		videoId = video.getId();
 		VideoSnippet snippet = video.getSnippet();
 		publishedAt = snippet.getPublishedAt();
 		channelId = snippet.getChannelId();
@@ -94,7 +98,7 @@ public class YTVideo implements Comparable<YTVideo> {
 		if (!(obj instanceof YTVideo))
 			return false;
 		YTVideo other = (YTVideo) obj;
-		return id.equals(other.getId());
+		return videoId.equals(other.getVideoId());
 	}
 
 	public String getChannelId() {
@@ -105,8 +109,8 @@ public class YTVideo implements Comparable<YTVideo> {
 		return duration;
 	}
 
-	public String getId() {
-		return id;
+	public String getVideoId() {
+		return videoId;
 	}
 
 	public DateTime getPublishedAt() {
@@ -124,7 +128,7 @@ public class YTVideo implements Comparable<YTVideo> {
 	@Override
 	public int hashCode() {
 
-		return id.hashCode();
+		return videoId.hashCode();
 	}
 
 	public boolean isFiltered() {

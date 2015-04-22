@@ -121,9 +121,9 @@ public class User {
 		List<YTVideo> list = getVideosFromYoutube(activeSubscriptions);
 		List<YTVideo> result = new ArrayList<>();
 		for (YTVideo video : list) {
-			if (!videos.containsKey(video.getId())) {
+			if (!videos.containsKey(video.getVideoId())) {
 				result.add(video);
-				videos.put(video.getId(), video);
+				videos.put(video.getVideoId(), video);
 			}
 
 		}
