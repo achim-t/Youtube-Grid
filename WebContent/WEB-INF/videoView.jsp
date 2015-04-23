@@ -6,7 +6,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Channel List</title>
+<title>Youtube Grid</title>
 
 <link rel="stylesheet"
 	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
@@ -15,6 +15,7 @@
 <link rel="icon" href="./favicon.ico" type="image/x-icon">
 </head>
 <body>
+<%@include file="header.jsp"%>
 	<div class="container-fluid">
 		<div class="video-list row"></div>
 		<button class="btn btn-default center-block ladda-button"

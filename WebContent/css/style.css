@@ -1,7 +1,5 @@
-
-
 .video-duration {
-position: absolute;
+	position: absolute;
 	display: inline;
 	height: 16px;
 	line-height: 16px;
@@ -29,12 +27,14 @@ position: absolute;
 	display: none;
 }
 
-.video:hover .img-container .mark-watched{
+.video:hover .img-container .mark-watched {
 	display: inline
 }
+
 .video:hover .img-container .filter {
-	display:inline;
+	display: inline;
 }
+
 .filter {
 	position: absolute;
 	display: none;
@@ -43,33 +43,35 @@ position: absolute;
 	bottom: 5px;
 	left: 5px;
 	cursor: pointer;
-    padding: 2px;
-        border-style: solid;
-    border-width: 1px;
-    border-radius: 2px;
-    border-color: #333;
+	padding: 2px;
+	border-style: solid;
+	border-width: 1px;
+	border-radius: 2px;
+	border-color: #333;
 }
 
-.watched-badge, .filtered-badge{
-    position: absolute;
-    top: 10px;
-    padding: 2px 4px;
-    line-height: 1.3em;
-    text-align: left;
-    opacity: 0.5;
-    color: #fff;
-    font-size: 11px;
-    font-weight: bold;
-    background-color: #000;
-    cursor: pointer;
+.watched-badge, .filtered-badge {
+	position: absolute;
+	top: 10px;
+	padding: 2px 4px;
+	line-height: 1.3em;
+	text-align: left;
+	opacity: 0.5;
+	color: #fff;
+	font-size: 11px;
+	font-weight: bold;
+	background-color: #000;
+	cursor: pointer;
 }
 
-.watched-badge{
-    left: 10px;
+.watched-badge {
+	left: 10px;
 }
+
 .filtered-badge {
-	right: 10px;	
+	right: 10px;
 }
+
 .mark-watched {
 	position: absolute;
 	display: none;
@@ -78,27 +80,26 @@ position: absolute;
 	bottom: 5px;
 	right: 5px;
 	cursor: pointer;
-    padding: 2px;
-    border-style: solid;
-    border-width: 1px;
-    border-radius: 2px;
-    border-color: #333;
-    
+	padding: 2px;
+	border-style: solid;
+	border-width: 1px;
+	border-radius: 2px;
+	border-color: #333;
 }
 
 .muted {
 	opacity: 0.7;
 }
 
-.byline{
-    color: #767676;
+.byline {
+	color: #767676;
 }
 
 .video {
 	float: left;
 	position: relative;
 	width: 200px;
- 	height: 164px; 
+	height: 164px;
 	margin: 12px 4px;
 	border: none;
 	overflow: hidden;
@@ -107,7 +108,6 @@ position: absolute;
 .video img {
 	opacity: 0.9;
 	width: 192px;
-	
 }
 
 .video .img-container {
@@ -123,43 +123,50 @@ position: absolute;
 	position: relative;
 	background-color: white;
 	color: #167ac6;
-    line-height: 1.3em;
-    height: 2.6em;
-    overflow: hidden;
-    text-decoration: none;
-    margin: 0;
-    padding: 0;
-    border: 0;
-    font-size: 100%;
-    font-weight: bold;
-    font-family: arial, sans-serif;
-    right: 0;
+	line-height: 1.3em;
+	height: 2.6em;
+	overflow: hidden;
+	text-decoration: none;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font-weight: bold;
+	font-family: arial, sans-serif;
+	right: 0;
 }
 
 .title:hover {
-    color: #167ac6;
+	color: #167ac6;
 }
 
 /* Sticky footer styles
 -------------------------------------------------- */
 html {
-  position: relative;
-  min-height: 100%;
+	position: relative;
+	min-height: 100%;
 }
+
 body {
-  /* Margin bottom by footer height */
-  margin-bottom: 60px;
-}
-footer {
-position: fixed;
-  width: 100%;
-  padding: 6px;
-  bottom: 0;
-  background: #e2e2e2;
-  z-index: 200;
-  box-shadow: 0 -2px 2px rgba(0,0,0,0.1);
-
-  height: 60px;
-  background-color: #f5f5f5;
+	padding-top: 70px;
+	/* Margin bottom by footer height */
+	padding-bottom: 70px;
 }
 
+
+
+.pull-center {
+	text-align: center;
+}
+
+.pull-center>.nav {
+	float: none;
+	display: inline-block;
+	*display: inline;
+	*zoom: 1;
+	height: 32px;
+}
+
+.navbar-right {
+	margin-right: 20px;
+}
