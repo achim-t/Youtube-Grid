@@ -33,7 +33,7 @@
 						aria-label="Close">
 						<span aria-hidden="true">&times;</span>
 					</button>
-					<h4 class="modal-title" id="myModalLabel">Modal title</h4>
+					<h4 class="modal-title">Add a filter for <span id="channelName"></span>'s Channel</h4>
 				</div>
 				<div class="modal-body">
 					<form id="filter-add-form">
@@ -50,6 +50,8 @@
 						</div>
 
 					</form>
+					<p>This filter will be applied immediately only to the selected video, 
+					as well as to all videos loaded from now on.</p>
 				</div>
 
 			</div>

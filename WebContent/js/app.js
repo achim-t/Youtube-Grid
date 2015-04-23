@@ -275,8 +275,7 @@ $(function() {
 				var channelName = button.data('channelname')
 				var id = button.data('id')
 				var modal = $(this)
-				modal.find('.modal-title').text(
-						"Filter Videos on " + channelName + "'s Channel")
+				modal.find('#channelName').text(channelName)
 				modal.find('#filter').val(title)
 				modal.find('#channel').val(channel)
 				modal.find('#id').val(id)
