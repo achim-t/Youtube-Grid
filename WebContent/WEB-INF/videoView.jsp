@@ -12,6 +12,7 @@
 	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
 <link rel="stylesheet" href="./css/style.css">
 <link rel="stylesheet" href="./css/ladda-themeless.min.css">
+<link rel="icon" href="./favicon.ico" type="image/x-icon">
 </head>
 <body>
 	<div class="container-fluid">
