@@ -233,6 +233,12 @@ function createVideo(index, data) {
 		window.open('https://www.youtube.com/channel/'+data.channelId);
 		return false;
 	}).text(data.channelName)));
+	var date = moment(data.publishedAt.value)
+	$video.append($('<div>',{
+		'class' : 'publishedAt',
+		'title' : date.format("dddd, MMMM Do YYYY, h:mm:ss a")
+	}).text(date.fromNow()))
+	
 
 	if (data.watched) {
 		$imgcontainer.addClass("muted");

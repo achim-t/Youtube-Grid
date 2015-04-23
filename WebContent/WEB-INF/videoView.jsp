@@ -66,6 +66,7 @@
 		src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 	<script src="./js/spin.min.js"></script>
 	<script src="./js/ladda.min.js"></script>
+	<script src="./js/moment.min.js"></script>
 	<script src="./js/app.js"></script>
 	<script src="./js/filters.js"></script>
 
