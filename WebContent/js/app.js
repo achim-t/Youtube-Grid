@@ -147,11 +147,6 @@ function refresh() {
 		l_refresh.stop()
 	});
 }
-function createVideo2(index, data) {
-	var html = template(data);
-	var $video = $('<div>').html(html);
-	$video.appendTo($('.video-list'));
-};
 
 function createVideo(index, data) {
 	var url = "https://www.youtube.com/watch?v=" + data.videoId;
@@ -263,8 +258,6 @@ function reload(){
 	load(false);
 }
 $(function() {
-	var template = Handlebars.compile($('#template').html());
-
 	$('#filterModal').on(
 			'show.bs.modal',
 			function(event) {
