@@ -4,10 +4,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.TreeSet;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 
 import com.google.api.client.util.DateTime;
 import com.google.api.services.youtube.YouTube;
@@ -30,7 +32,8 @@ public class Channel {
 	}
 
 	private boolean isActive = true;
-	private List<String> filters;
+	@Transient // filters will be sent to the client via Gson, no need for a getter
+	private Collection<String> filters;
 	private DateTime lastRefreshTime;
 
 	public DateTime getLastRefreshTime() {
@@ -47,7 +50,6 @@ public class Channel {
 		thumbnailUrl = snippet.getThumbnails().getDefault().getUrl();
 		channelId = snippet.getResourceId().getChannelId();
 		title = snippet.getTitle();
-		filters = new ArrayList<>();
 		lastRefreshTime = new DateTime(0);
 	}
 
@@ -84,8 +86,7 @@ public class Channel {
 	}
 
 	public void setFilters(Collection<String> collection) {
-		filters.clear();
-		filters.addAll(collection);
+		filters=new TreeSet<>(collection);
 	}
 
 	public List<String> getVideos(YouTube youtube) throws IOException {
