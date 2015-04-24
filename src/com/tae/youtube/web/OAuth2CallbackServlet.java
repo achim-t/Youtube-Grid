@@ -1,7 +1,6 @@
 package com.tae.youtube.web;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -36,8 +35,7 @@ public class OAuth2CallbackServlet extends HttpServlet {
 			response.sendRedirect("./login");
 		}
 		else {
-			PrintWriter writer = response.getWriter();
-			writer.write("y u no access :(");
+			response.sendRedirect("./failure.html");
 		}
 	}
 }
