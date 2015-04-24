@@ -13,6 +13,7 @@ Submit Bugs/Feature Requests/Pull Requests
 ### Technologies used
 * [Bootstrap](http://getbootstrap.com/)
 * [EclipseLink](http://eclipse.org/eclipselink/)
+* [Google APIs Client Library for Java](https://github.com/google/google-api-java-client)
 * [H2](http://www.h2database.com/html/main.html)
 * Java Servlet
 * Java 7
