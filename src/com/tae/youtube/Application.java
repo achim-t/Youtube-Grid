@@ -27,8 +27,7 @@ public class Application {
 	public static User createUser(Credential credential, String sessionId)
 			throws IOException {
 		User user = null;
-		YouTube youtube = new YouTube.Builder(Auth.HTTP_TRANSPORT,
-				Auth.JSON_FACTORY, credential).build();
+		YouTube youtube = Auth.getYoutube(credential);
 		ChannelListResponse list = youtube.channels().list("snippet")
 				.setMine(true).execute();
 		com.google.api.services.youtube.model.Channel channel = list.getItems()
@@ -77,7 +76,6 @@ public class Application {
 			// e.printStackTrace();
 			System.out.println(e.getMessage());
 		}
-		// TODO get from H2
 		em.close();
 		if (user != null)
 			users.put(id, user);

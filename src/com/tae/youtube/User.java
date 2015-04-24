@@ -60,8 +60,7 @@ public class User {
 		if (youtube == null) {
 			Credential credential = Auth.getCredential(sessionId);
 
-			youtube = new YouTube.Builder(Auth.HTTP_TRANSPORT,
-					Auth.JSON_FACTORY, credential).build();
+			youtube = Auth.getYoutube(credential);
 		}
 		return youtube;
 	}

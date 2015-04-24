@@ -16,6 +16,7 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.store.DataStore;
 import com.google.api.client.util.store.FileDataStoreFactory;
+import com.google.api.services.youtube.YouTube;
 
 public class Auth {
 
@@ -49,6 +50,12 @@ public class Auth {
 		return flow;
 	}
 
+	
+	public static YouTube getYoutube(Credential credential){
+		YouTube youtube = new YouTube.Builder(Auth.HTTP_TRANSPORT,
+				Auth.JSON_FACTORY, credential).setApplicationName("yt-grid").build();
+		return youtube;
+	}
 	public static Credential getCredential(String id) throws IOException {
 		return getFlow().loadCredential(id);
 	}
