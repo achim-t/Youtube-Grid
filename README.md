@@ -1,9 +1,7 @@
 # Youtube Grid
-===========
 
-Youtube Grid is heavily influenced by 
-				[daviddeutsch's](https://github.com/daviddeutsch)
-				[YT SaneGrid](http://daviddeutsch.github.io/yt-sanegrid/)
+
+Youtube Grid is heavily influenced by [daviddeutsch's](https://github.com/daviddeutsch)	[YT SaneGrid](http://daviddeutsch.github.io/yt-sanegrid/)
 
 
 Submit Bugs/Feature Requests/Pull Requests
