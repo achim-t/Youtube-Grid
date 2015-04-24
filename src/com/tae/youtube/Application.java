@@ -19,7 +19,7 @@ public class Application {
 	private static Map<String, String> sessionIdToYoutubeIdMapping = new HashMap<>();
 	private static ExecutorService executor;
 	private static EntityManagerFactory factory;
-	
+
 	public static EntityManagerFactory getFactory() {
 		return factory;
 	}
@@ -37,48 +37,47 @@ public class Application {
 		String name = channel.getSnippet().getTitle();
 		if (youtubeId != null) {
 			user = getUserByYouTubeId(youtubeId);
+			EntityManager em = factory.createEntityManager();
+			em.getTransaction().begin();
 			if (user == null) {
 				System.out.println(youtubeId);
 				user = new User();
-				
-				
 				user.setId(youtubeId);
 				user.setName(name);
-//				User.users.put(youtubeId, user); //TODO save user
-				EntityManager em = factory.createEntityManager();
-				em.getTransaction().begin();
 				em.persist(user);
-//				em.persist(user.getSettings());
 				user.setYoutube(youtube);
-				em.getTransaction().commit();
-				em.close();
 			}
 			sessionIdToYoutubeIdMapping.put(sessionId, youtubeId);
+			em.persist(new SessionToYoutube(sessionId, youtubeId));
+			em.getTransaction().commit();
+			em.close();
 		}
 		return user;
 	}
+
 	public static void init() {
 		factory = Persistence.createEntityManagerFactory("default");
 		int numThreads = 50;
 		executor = Executors.newFixedThreadPool(numThreads);
-		sessionIdToYoutubeIdMapping = new HashMap<>();
 		users = new HashMap<>();
 	}
 
 	private static User getUserByYouTubeId(String id) {
+		if (id == null)
+			return null;
 		if (users.containsKey(id))
 			return users.get(id);
-		
+
 		User user = null;
 		EntityManager em = factory.createEntityManager();
 		try {
 			user = em.find(User.class, id);
 		} catch (Exception e) {
-//			 TODO Auto-generated catch block
-//			e.printStackTrace();
+			// TODO Auto-generated catch block
+			// e.printStackTrace();
 			System.out.println(e.getMessage());
 		}
-		//TODO get from H2
+		// TODO get from H2
 		em.close();
 		if (user != null)
 			users.put(id, user);
@@ -98,16 +97,23 @@ public class Application {
 	}
 
 	public static ExecutorService getExecutor() {
-		// TODO Auto-generated method stub
 		return executor;
 	}
-	
+
 	public static User getUserBySessionId(String sessionId) {
 		if (sessionIdToYoutubeIdMapping.containsKey(sessionId)) {
 			String youtubeId = sessionIdToYoutubeIdMapping.get(sessionId);
 			return getUserByYouTubeId(youtubeId);
-		} else {
-			return null;
 		}
+		EntityManager em = factory.createEntityManager();
+		SessionToYoutube sessionToYoutube = em.find(SessionToYoutube.class,
+				sessionId);
+		em.close();
+		if (sessionToYoutube != null) {
+			String youtubeId = sessionToYoutube.getYoutubeId();
+			sessionIdToYoutubeIdMapping.put(sessionId, youtubeId);
+			return getUserByYouTubeId(youtubeId);
+		}
+		return null;
 	}
 }

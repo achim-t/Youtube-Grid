@@ -9,6 +9,8 @@
 		<class>com.tae.youtube.Channel</class>
 		<class>com.tae.youtube.YTVideo</class>
 		<class>com.tae.youtube.Settings</class>
+		<class>com.tae.youtube.SessionToYoutube</class>
+		
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />
