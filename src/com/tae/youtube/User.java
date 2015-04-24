@@ -56,7 +56,7 @@ public class User {
 		return name;
 	}
 
-	private YouTube getYoutube(String sessionId) throws IOException {
+	private YouTube getYoutube(String sessionId) throws IOException  {
 		if (youtube == null) {
 			Credential credential = Auth.getCredential(sessionId);
 
@@ -74,7 +74,7 @@ public class User {
 		this.youtubeId = id;
 	}
 
-	private List<Channel> getActiveSubscriptions() throws IOException {
+	private List<Channel> getActiveSubscriptions() {
 		List<Channel> currentSubscriptions = getSubscriptionsFromYouTube();
 
 		for (Channel subscription : subscriptions.values()) {
@@ -137,7 +137,7 @@ public class User {
 	}
 
 	private List<YTVideo> getVideosFromYoutube(Collection<Channel> channels)
-			throws IOException {
+			 {
 		List<YTVideo> videos = new ArrayList<>();
 		List<String> ids = getVideoIds(channels);
 
@@ -173,8 +173,7 @@ public class User {
 		return videos;
 	}
 
-	private List<String> getVideoIds(Collection<Channel> channels)
-			throws IOException {
+	private List<String> getVideoIds(Collection<Channel> channels) {
 		List<String> ids = new ArrayList<>();
 		Collection<Callable<List<String>>> tasks = new ArrayList<>();
 		for (Channel channel : channels) {
@@ -191,14 +190,14 @@ public class User {
 					}
 				}
 			}
-		} catch (InterruptedException| ExecutionException e) {
+		} catch (InterruptedException | ExecutionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} 
+		}
 		return ids;
 	}
 
-	private List<Channel> getSubscriptionsFromYouTube() throws IOException {
+	private List<Channel> getSubscriptionsFromYouTube()  {
 
 		List<Channel> channelList = new ArrayList<>();
 		String nextPageToken = "";
@@ -212,6 +211,9 @@ public class User {
 			} catch (TokenResponseException | GoogleJsonResponseException e) {
 				// TODO Auto-generated catch block
 				System.out.println(e);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 			nextPageToken = subscriptionListResponse.getNextPageToken();
 			for (Subscription sub : subscriptionListResponse.getItems()) {
@@ -239,7 +241,7 @@ public class User {
 		for (String channelId : filters.keySet()) {
 			Channel channel = subscriptions.get(channelId);// TODO channel can
 															// be null
-			if (channel!=null && channel.isActive()) {
+			if (channel != null && channel.isActive()) {
 				channel.setFilters(filters.get(channelId));
 				list.add(channel);
 			}
@@ -270,7 +272,7 @@ public class User {
 		}
 
 		@Override
-		public List<String> call() throws Exception {
+		public List<String> call() {
 
 			return channel.getVideos(youtube);
 		}
@@ -284,10 +286,16 @@ public class User {
 		}
 
 		@Override
-		public VideoListResponse call() throws Exception {
+		public VideoListResponse call() {
 			String idsString = String.join(",", ids);
-			return youtube.videos().list("snippet,contentDetails")
-					.setId(idsString).execute();
+			VideoListResponse result = null;
+			try {
+				result = youtube.videos().list("snippet,contentDetails")
+						.setId(idsString).execute();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return result;
 		}
 
 	}

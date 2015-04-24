@@ -60,7 +60,6 @@ public class Auth {
 	}
 
 	public static String getAuthorizationUrl() throws IOException {
-		// TODO Auto-generated method stub
 		return getFlow().newAuthorizationUrl().setRedirectUri(REDIRECT_URI)
 				.build();
 	}

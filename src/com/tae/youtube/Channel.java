@@ -89,18 +89,24 @@ public class Channel {
 		filters=new TreeSet<>(collection);
 	}
 
-	public List<String> getVideos(YouTube youtube) throws IOException {
+	public List<String> getVideos(YouTube youtube){
 		List<String> ids = new ArrayList<>();
-		com.google.api.services.youtube.YouTube.Search.List searchList = youtube
-				.search().list("id").setChannelId(channelId).setOrder("date")
-				.setType("video").setMaxResults(50L)
-				.setPublishedAfter(lastRefreshTime);
+		try {
+			com.google.api.services.youtube.YouTube.Search.List searchList = youtube
+					.search().list("id").setChannelId(channelId).setOrder("date")
+					.setType("video").setMaxResults(50L)
+					.setPublishedAfter(lastRefreshTime);
 
-		SearchListResponse listResponse = searchList.execute();
-		for (SearchResult item : listResponse.getItems()) {
-			String id = item.getId().getVideoId();
-			ids.add(id);
+			SearchListResponse listResponse = searchList.execute();
+			for (SearchResult item : listResponse.getItems()) {
+				String id = item.getId().getVideoId();
+				ids.add(id);
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		
 		return ids;
 	}
 }
