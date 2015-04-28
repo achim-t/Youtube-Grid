@@ -3,6 +3,15 @@ var l_more = Ladda.create(document.querySelector('#btnMore'));
 var l_refresh = Ladda.create(document.querySelector('#btnRefresh'));
 var count = 0;
 $.ajaxSetup({ cache: false });
+var dateFormatString = "dddd, MMMM Do YYYY, H:mm:ss";
+function setAgo(){
+	$('.video').each(function() {
+		var $publishedAt=$('.publishedAt', $(this))
+		var date=moment($publishedAt.attr('title'), dateFormatString)
+		$publishedAt.text(date.fromNow())
+	})
+
+}
 function toggleWatched() {
 
 	if (this.checked) {
@@ -134,6 +143,7 @@ function load(boolRefresh) {
 }
 function refresh() {
 	l_refresh.start()
+	setAgo()
 	console.log("trying to refresh Videos")
 	$.ajax({
 		url : './refreshVideos'
@@ -236,7 +246,7 @@ function createVideo(index, data) {
 	var date = moment(data.publishedAt.value)
 	$video.append($('<div>',{
 		'class' : 'publishedAt',
-		'title' : date.format("dddd, MMMM Do YYYY, h:mm:ss a")
+		'title' : date.format(dateFormatString)
 	}).text(date.fromNow()))
 	
 
