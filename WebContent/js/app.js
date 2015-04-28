@@ -95,7 +95,6 @@ function markWatched(video) {
 };
 function watched(e) {
 	e.preventDefault();
-	console.log("mark as watched");
 	var video = $(this).closest(".video");
 	markWatched(video);
 };
@@ -144,12 +143,10 @@ function load(boolRefresh) {
 function refresh() {
 	l_refresh.start()
 	setAgo()
-	console.log("trying to refresh Videos")
 	$.ajax({
 		url : './refreshVideos'
 	}).done(function(responseJson) {
 		responseJson.reverse();
-		console.log("got response for refreshing videos")
 		$.each(responseJson, function(index, data) {
 			$video = createVideo(index, data);
 			$('.video-list').prepend($video);

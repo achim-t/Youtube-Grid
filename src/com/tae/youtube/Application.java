@@ -39,7 +39,6 @@ public class Application {
 			EntityManager em = factory.createEntityManager();
 			em.getTransaction().begin();
 			if (user == null) {
-				System.out.println(youtubeId);
 				user = new User();
 				user.setId(youtubeId);
 				user.setName(name);
