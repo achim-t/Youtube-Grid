@@ -1,6 +1,6 @@
 # Youtube Grid
 
-**Youtube Grid** provides a better and more compact view on your Youtube subscriptions. You can filter out the videos you never want to watch by their title.
+**Youtube Grid** provides a better and more compact view on your Youtube subscriptions. Unclatter your subscriptions, hide videos you never want to watch.
 
 **Youtube Grid** should be run in a Webcontainer that supports Java 7 and the Servlet Spec 3.0; Tomcat 8 works very well.
 
