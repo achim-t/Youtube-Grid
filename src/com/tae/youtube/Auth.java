@@ -20,8 +20,9 @@ import com.google.api.services.youtube.YouTube;
 
 public class Auth {
 
-	public static final String REDIRECT_URI = "http://localhost:8080/Youtube/oauth2callback";
+//	public static final String REDIRECT_URI = "http://localhost:8080/Youtube/oauth2callback";
 //	public static final String REDIRECT_URI = "http://yt-grid.herokuapp.com/oauth2callback";
+	public static final String REDIRECT_URI = "http://yt-grid.jvmhost.net/oauth2callback";
 	private static final String CLIENTSECRETS_LOCATION = "client_secret.json";
 	private static final Collection<String> SCOPES = Collections
 			.singleton("https://www.googleapis.com/auth/youtube.readonly");
