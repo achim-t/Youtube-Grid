@@ -46,7 +46,6 @@ public class Videos extends HttpServlet {
 		if (request.getRequestURI().endsWith("refreshVideos")) {
 			String newestKnownVideoId = request
 					.getParameter("newestKnownVideoId");
-			System.out.println(newestKnownVideoId);
 			List<YTVideo> savedVideos = user.getSavedVideos();
 			videos = user.getVideos(sessionId);
 			if (newestKnownVideoId != null) {
