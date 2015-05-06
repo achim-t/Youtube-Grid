@@ -44,7 +44,19 @@ public class Videos extends HttpServlet {
 		}
 
 		if (request.getRequestURI().endsWith("refreshVideos")) {
+			String newestKnownVideoId = request
+					.getParameter("newestKnownVideoId");
+			System.out.println(newestKnownVideoId);
+			List<YTVideo> savedVideos = user.getSavedVideos();
 			videos = user.getVideos(sessionId);
+			if (newestKnownVideoId != null) {
+				for (YTVideo video : savedVideos) {
+					if (video.getVideoId().equals(newestKnownVideoId))
+						break;
+					else
+						videos.add(video);
+				}
+			}
 		}
 		if (videos != null) {
 			String json = new Gson().toJson(videos);

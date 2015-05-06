@@ -144,7 +144,10 @@ function refresh() {
 	l_refresh.start()
 	setAgo()
 	$.ajax({
-		url : './refreshVideos'
+		url : './refreshVideos',
+		data : {
+			newestKnownVideoId : $('.video')[0].id
+		}
 	}).done(function(responseJson) {
 		responseJson.reverse();
 		$.each(responseJson, function(index, data) {
