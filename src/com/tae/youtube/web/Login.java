@@ -21,12 +21,13 @@ public class Login extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		String sessionId = req.getSession().getId();
-
+		
 		User user = Application.getUserBySessionId(sessionId);
 		if (user == null) {
 			Credential credential = Auth.getCredential(sessionId);
 			if (credential == null) {
-				String url = Auth.getAuthorizationUrl();
+				String redirectUri = Auth.getRedirectUri(req);
+				String url = Auth.getAuthorizationUrl(redirectUri);
 				resp.sendRedirect(url);
 				return;
 			}
@@ -37,5 +38,7 @@ public class Login extends HttpServlet {
 		}
 		resp.sendRedirect("./index");
 	}
+
+	
 
 }

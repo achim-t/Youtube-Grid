@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.Collections;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.auth.oauth2.StoredCredential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
@@ -20,9 +22,7 @@ import com.google.api.services.youtube.YouTube;
 
 public class Auth {
 
-//	public static final String REDIRECT_URI = "http://localhost:8080/Youtube/oauth2callback";
-//	public static final String REDIRECT_URI = "http://yt-grid.herokuapp.com/oauth2callback";
-	public static final String REDIRECT_URI = "http://yt-grid.jvmhost.net/oauth2callback";
+	public static final String REDIRECT_URI = "/oauth2callback";
 	private static final String CLIENTSECRETS_LOCATION = "client_secret.json";
 	private static final Collection<String> SCOPES = Collections
 			.singleton("https://www.googleapis.com/auth/youtube.readonly");
@@ -51,12 +51,13 @@ public class Auth {
 		return flow;
 	}
 
-	
-	public static YouTube getYoutube(Credential credential){
+	public static YouTube getYoutube(Credential credential) {
 		YouTube youtube = new YouTube.Builder(Auth.HTTP_TRANSPORT,
-				Auth.JSON_FACTORY, credential).setApplicationName("yt-grid").build();
+				Auth.JSON_FACTORY, credential).setApplicationName("yt-grid")
+				.build();
 		return youtube;
 	}
+
 	public static Credential getCredential(String id) throws IOException {
 		return getFlow().loadCredential(id);
 	}
@@ -67,8 +68,18 @@ public class Auth {
 
 	}
 
-	public static String getAuthorizationUrl() throws IOException {
-		return getFlow().newAuthorizationUrl().setRedirectUri(REDIRECT_URI)
+	public static String getAuthorizationUrl(String redirectUri)
+			throws IOException {
+		return getFlow().newAuthorizationUrl().setRedirectUri(redirectUri)
 				.build();
+	}
+
+	public static String getRedirectUri(HttpServletRequest req) {
+		StringBuffer requestURL = req.getRequestURL();
+		String servletPath = req.getServletPath();
+		int start = requestURL.lastIndexOf(servletPath);
+		requestURL.delete(start, requestURL.length());
+		requestURL.append(REDIRECT_URI);
+		return requestURL.toString();
 	}
 }
